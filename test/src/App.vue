@@ -1,18 +1,18 @@
 <template>
   <div id="app">
     <!-- 
-      
-      v-bind syntax:
+      NOTES:
 
-        v-bind:(name of the thing you wanna pass) 
-            ="(the data in the script you wanna bind)"
+        v-bind syntax:
 
-        example:
+          v-bind:name of data being imported into this file / data in / prop   =   "data to be sent to the incoming file / data out"
 
-        v-bind:todos = "todos_arr"
+          example:
 
+          v-bind:todos = "todos_arr"
+          Wherein this file imports the "todos" prop, while sending the data from the "todos_arr" 
     -->
-    <Todos v-bind:todos="todos_arr"/>
+    <Todos v-bind:todos_main="todos_arr" v-on:item-deleted="deleteTodo"/>
   </div>
 </template>
 
@@ -22,27 +22,36 @@ import Todos from './components/Todos';
 export default {
   name: 'App',
   components: {
-    Todos
+    Todos    
   },
   data(){
     return{
       todos_arr: [
       {
         id: 1,
-        title: 'ey',
-        completed: false
+        title: 'Learn Vue',
+        completed: false,
+        pending: true
       },
       {
         id: 2,
-        title: 'yo',
-        completed: true
+        title: 'Be good at Vue',
+        completed: false,
+        pending: false
       },
       {
         id: 3,
-        title: 'aye',
-        completed: true
+        title: 'Master Vue',
+        completed: false,
+        pending: false
       }
     ]}
+  },
+
+  methods:{
+    deleteTodo(id){
+      this.todos_arr = this.todos_arr.filter(todos_arr => todos_arr.id !== id)
+    }
   }
 }
 </script>
