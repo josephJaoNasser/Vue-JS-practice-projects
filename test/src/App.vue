@@ -12,17 +12,29 @@
           v-bind:todos = "todos_arr"
           Wherein this file imports the "todos" prop, while sending the data from the "todos_arr" 
     -->
+    <header>
+      <MainHeader />
+    </header>
+
+    <AddItem />
+
     <Todos v-bind:todos_main="todos_arr" v-on:item-deleted="deleteTodo"/>
+
   </div>
 </template>
 
 <script>
+import MainHeader from './components/MainHeader';
 import Todos from './components/Todos';
+import AddItem from './components/AddItem';
+
 
 export default {
   name: 'App',
   components: {
-    Todos    
+    Todos,
+    MainHeader,
+    AddItem 
   },
   data(){
     return{

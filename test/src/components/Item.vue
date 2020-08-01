@@ -1,6 +1,5 @@
 <template>
-    <div class="todo-item" 
-        v-bind:class="{'is-complete':listItem.completed}">
+    <div class="todo-item" v-bind:class="{'is-complete':listItem.completed}">
         <!--
              NOTES:
              
@@ -8,6 +7,7 @@
 
              USAGE:
              Conditionally adds a class
+             v-bind can also be bound to any html attribute such as "checked" for checkboxes
 
              SYNTAX:            
             v-bind:class = "{'CLASS TO BE ADDED': the condition, ...}"       
@@ -18,12 +18,20 @@
             <h1>{{listItem.title}}</h1>
             <div class="checkbox-div">
                  <!--
-                    NOTES:
+                    NOTES:                  
                     
-                    v-bind can also be bound to any html attribute such as "checked" for checkboxes       
+                    Events 
+                    
+                    USAGE:
+                    - logs an action.
+                    - can contain data (sugh as IDs) as payload
+
+                    SYNTAX:
+                    $emit('event-name',payload)
+                    
                 -->
                 <div>
-                    Completed:<input type="checkbox" v-on:change="markComplete" v-bind:checked="listItem.complete"> 
+                    Completed:<input type="checkbox" v-on:change="markComplete" v-bind:checked="listItem.complete" @click="$emit('marked-complete',listItem.id)"> 
                 </div>                               
             </div>
         </div>
@@ -42,7 +50,7 @@ export default {
         
          markComplete(){
             this.listItem.completed = !this.listItem.completed;    
-            this.listItem.pending = false;        
+            
         }
     }
 }
