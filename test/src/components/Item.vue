@@ -1,6 +1,6 @@
 <template>
     <div class="todo-item" 
-        v-bind:class="{'is-complete':listItem.completed,'is-pending':listItem.pending}">
+        v-bind:class="{'is-complete':listItem.completed}">
         <!--
              NOTES:
              
@@ -22,12 +22,8 @@
                     
                     v-bind can also be bound to any html attribute such as "checked" for checkboxes       
                 -->
-
                 <div>
-                    Pending: <input type="radio" name="status" v-on:change="markPending" v-bind:checked="listItem.pending">
-                </div>
-                <div>
-                    Completed:<input type="radio" name="status" v-on:change="markComplete" v-bind:checked="listItem.complete"> 
+                    Completed:<input type="checkbox" v-on:change="markComplete" v-bind:checked="listItem.complete"> 
                 </div>                               
             </div>
         </div>
@@ -42,13 +38,8 @@
 export default {
     name:"Item",
     props: ["listItem"],
-    methods:{
-       
-        markPending(){            
-            this.listItem.pending = !this.listItem.pending;
-            this.listItem.completed = false;
-        },
-
+    methods:{       
+        
          markComplete(){
             this.listItem.completed = !this.listItem.completed;    
             this.listItem.pending = false;        

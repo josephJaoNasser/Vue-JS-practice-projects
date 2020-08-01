@@ -30,20 +30,17 @@ export default {
       {
         id: 1,
         title: 'Learn Vue',
-        completed: false,
-        pending: true
+        completed: false
       },
       {
         id: 2,
         title: 'Be good at Vue',
-        completed: false,
-        pending: false
+        completed: false
       },
       {
         id: 3,
         title: 'Master Vue',
-        completed: false,
-        pending: false
+        completed: false
       }
     ]}
   },
