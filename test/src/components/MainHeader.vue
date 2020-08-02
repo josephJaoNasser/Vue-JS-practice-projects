@@ -15,7 +15,7 @@ export default {
 <style scoped>
     .main-header{
         width: 100%;
-        background-color: #2f4d91;
+        background-color: #222;
         padding: 1em;
         color: white;
         -webkit-box-shadow: 2px 3px 17px -5px rgba(0,0,0,0.79);

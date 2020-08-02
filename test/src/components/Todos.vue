@@ -13,7 +13,8 @@
 <script>
 import Item from './Item';
 
-export default {
+export default 
+{
     name:"Todos",
     props: ["todos_main"], /*
                             NOTES:
@@ -21,15 +22,20 @@ export default {
                             This is used so that other files can call this component.
                             Make sure this and the v-bind from the file calling this component has the same name
                         */
-    components:{
+    components:
+    {
         Item
     }
 }
 </script>
 
 <style scoped>
-    .todos-main-div{
-        width: 960px;
-        margin: 0px auto;
+    
+    .todos-main-div
+    {      
+        margin: 0px auto;            
+        width: 85%;
+        height: 800px;
+        overflow-y: scroll;
     }
 </style>

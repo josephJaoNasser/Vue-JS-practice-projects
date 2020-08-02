@@ -43,12 +43,15 @@
 
 
 <script>
-export default {
+export default 
+{
     name:"Item",
     props: ["listItem"],
-    methods:{       
+    methods:
+    {       
         
-         markComplete(){
+        markComplete()
+        {
             this.listItem.completed = !this.listItem.completed;    
             
         }

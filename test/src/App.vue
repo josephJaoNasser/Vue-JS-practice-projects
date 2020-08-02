@@ -16,9 +16,10 @@
       <MainHeader />
     </header>
 
-    <AddItem />
-
+    
+    <AddItem v-on:item-added="addItem"/>
     <Todos v-bind:todos_main="todos_arr" v-on:item-deleted="deleteTodo"/>
+    
 
   </div>
 </template>
@@ -27,6 +28,7 @@
 import MainHeader from './components/MainHeader';
 import Todos from './components/Todos';
 import AddItem from './components/AddItem';
+import axios from 'axios';
 
 
 export default {
@@ -38,29 +40,52 @@ export default {
   },
   data(){
     return{
-      todos_arr: [
-      {
-        id: 1,
-        title: 'Learn Vue',
-        completed: false
-      },
-      {
-        id: 2,
-        title: 'Be good at Vue',
-        completed: false
-      },
-      {
-        id: 3,
-        title: 'Master Vue',
-        completed: false
-      }
-    ]}
+      todos_arr: []
+    }
   },
 
   methods:{
-    deleteTodo(id){
-      this.todos_arr = this.todos_arr.filter(todos_arr => todos_arr.id !== id)
+    /*
+      NOTES:
+
+      Filter - filters out items in an array and returns it based on the condition given. This works the same way as a for loop.
+             - in this instance, it returns every item that hasn't been deleted (based on the ID)
+                - upon emitting the 'item-deleted' event, the ID of the deleted item is sent to this function. Based on the condition below, we could say that
+                  the filter returns everything except the deleted ID.  
+
+      SYNTAX:
+
+      this.array_name = this.array_name.filter(x = (condition))
+
+       */
+
+    deleteTodo(id)
+    { 
+      axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}
+      `).then(() => this.todos_arr = this.todos_arr.filter(t => t.id !== id))
+        .catch(error => console.log(error));
+      
+    },
+
+    addItem(newItem)
+    {
+      const {title, completed} = newItem;
+      
+      axios.post('https://jsonplaceholder.typicode.com/todos',{
+        
+        title,
+        completed
+
+      }).then(res => this.todos_arr = [...this.todos_arr, res.data]).catch(error => console.log(error));
+
+      
     }
+    
+  },
+
+  created()
+  {
+    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=10').then(res => this.todos_arr = res.data).catch(error => console.log(error))
   }
 }
 </script>
@@ -72,7 +97,8 @@ export default {
     padding: 0;
   }
 
-  body{
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+  body
+  {
+    font-family: Avenir, Helvetica, Arial, sans-serif;    
   }
 </style>
