@@ -12,10 +12,10 @@
           v-bind:todos = "todos_arr"
           Wherein this file imports the "todos" prop, while sending the data from the "todos_arr" 
     -->
-    
+    <LoadingOverlay ref="loaderOverlay"/>
     <AddItem v-on:item-added="addItem"/>
     <Todos v-bind:todos_main="todos_arr" v-on:item-deleted="deleteTodo"/>
-    
+   
 
   </div>
 </template>
@@ -23,6 +23,7 @@
 <script>
 import Todos from '../components/Todos';
 import AddItem from '../components/AddItem';
+import LoadingOverlay from '../components/LoadingOverlay';
 import axios from 'axios';
 
 
@@ -30,7 +31,8 @@ export default {
   name: 'Home',
   components: {
     Todos,
-    AddItem 
+    AddItem,
+    LoadingOverlay 
   },
   data(){
     return{
@@ -52,11 +54,11 @@ export default {
       this.array_name = this.array_name.filter(x = (condition))
 
        */
-
     deleteTodo(id)
     { 
+      this.$refs.loaderOverlay.doAjax();
       axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}
-      `).then(() => this.todos_arr = this.todos_arr.filter(t => t.id !== id))
+      `).then(() => this.todos_arr = this.todos_arr.filter(t => t.id !== id)).then(() => this.$refs.loaderOverlay.cancel())
         .catch(error => console.log(error));
       
     },
@@ -73,7 +75,9 @@ export default {
       }).then(res => this.todos_arr = [...this.todos_arr, res.data]).catch(error => console.log(error));
 
       
-    }
+    },
+
+    
     
   },
 

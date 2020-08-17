@@ -1,5 +1,6 @@
 <template>
     <div class="todo-item" v-bind:class="{'is-complete':listItem.completed}">
+    
         <!--
              NOTES:
              
@@ -69,6 +70,7 @@ export default
         padding:2em;
         margin: 2em;
         border-radius: 10px;
+        transition: background-color cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s;
     }
 
     .is-pending{
@@ -78,6 +80,7 @@ export default
 
     .is-complete{
         background-color: green;
+        transition: background-color cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s;
     }
 
     .checkbox-div div{
