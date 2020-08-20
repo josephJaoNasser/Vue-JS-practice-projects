@@ -7,15 +7,15 @@
             delimiter-icon="mdi-minus"
             :continuous="false">
                 <v-carousel-item class="info-carousel-item" v-bind:key="p.id" v-for="p in thePrinciples"> 
-                    <v-card-title class=" text-left principle">
+                    <v-icon class="mb-5 principle-icon">{{p.icon}}</v-icon>
+                    <v-card-title class="principle">
                         <b>{{p.principle}}</b>
                     </v-card-title>
-                    <br>
                     <v-card-text class="text-left regular-text">
                         {{p.description}}
                     </v-card-text>
                     <br>
-                    <v-btn color="success">Show Example</v-btn>
+                    <v-btn v-if="p.id % 1==0" color="success" @click="showEx(p.id)">Show Example</v-btn>
                 </v-carousel-item>
             </v-carousel>
         </v-card>
@@ -25,12 +25,20 @@
 <script>
 
 import Principles from '../assets/principles.json'
+import { EventBus } from '../event-bus.js';
+
 export default {
     name: "InformationContainer",
     
     data(){
         return{
             thePrinciples: Principles
+        }
+    },
+
+    methods: {
+        showEx(principleKey){
+            EventBus.$emit('exampleTrigger',principleKey);
         }
     }
 }
@@ -58,6 +66,10 @@ export default {
         font-family: 'Frank Ruhl Libre', serif;
         font-size: 3em;
         color:#015fa9
+    }
+
+    .principle-icon{
+        font-size: 7em!important;
     }
 
 </style>

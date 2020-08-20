@@ -1,31 +1,43 @@
 [    
     {
         "id":1,
+        "icon": "far fa-eye",
         "principle": "Visibility",
         "description":"Users need to know what all the options are, and know straight away how to access them. In the case of websites, this is an easy win."
     },
     {
         "id":2,
+        "icon": "far fa-hand-point-up",
         "principle": "Feedback",
         "description":"Every action needs a reaction. There needs to be some indication, like a sound, a moving dial, a spinning rainbow wheel, that the user’s action caused something."
     },
     {
         "id":3,
+        "icon": "fa-eye",
         "principle": "Affordance",
         "description":"Affordance is the relationship between what something looks like and how it's used."
     },
     {
         "id":4,
+        "icon": "fas fa-map-marker-alt",
         "principle": "Mapping",
         "description":"Mapping is the relationship between control and effect. The idea is that with good design, the controls to something will closely resemble what they affect."
     },
     {
-        "id":5,
+        "id":5.1,
+        "icon": "far fa-times-circle",
         "principle": "Constraints",
         "description":"Constraints are the limits to an interaction or an interface. Some are really obvious and physical, for example the screen size on a phone. Others are more nuanced, like a single, continuous page website having an image peeking onto the main page. It is logical for the user to scroll down to see the next image, and thus the rest of the website."
     },
     {
+        "id":5,
+        "icon": "far fa-times-circle",
+        "principle": "Constraints",
+        "description":"Some are really obvious and physical, for example the screen size on a phone. Others are more nuanced, like a single, continuous page website having an image peeking onto the main page. "
+    },
+    {
         "id":6,
+        "icon": "fa-sync-alt",
         "principle": "Consistency",
         "description":"The same action has to cause the same reaction, every time."
     }
