@@ -27,7 +27,7 @@
         "id":5.1,
         "icon": "far fa-times-circle",
         "principle": "Constraints",
-        "description":"Constraints are the limits to an interaction or an interface. Some are really obvious and physical, for example the screen size on a phone. Others are more nuanced, like a single, continuous page website having an image peeking onto the main page. It is logical for the user to scroll down to see the next image, and thus the rest of the website."
+        "description":"Constraints are the limits to an interaction or an interface."
     },
     {
         "id":5,

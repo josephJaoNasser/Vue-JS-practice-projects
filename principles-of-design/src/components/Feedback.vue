@@ -1,6 +1,10 @@
 <template>
-    <div class="feedback-interactions">
-        feedback
+    <div class="feedback-interactions" >
+        <v-btn class="mb-5" @click="isHidden=!isHidden">Push my buttons baby</v-btn>
+        <br>
+        <transition name="scale-transition">
+            <span v-if="!isHidden"> Yamete kudastop </span>
+        </transition>
     </div>
     
     
@@ -10,6 +14,11 @@
 
 export default {
     name: "Feedback",
+    data(){
+        return{
+            isHidden: true
+        }
+    }
 }
 </script>
 

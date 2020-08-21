@@ -55,8 +55,6 @@ export default {
         background-color: #ddd;
         padding: 1em;
         border-radius: 5px;
-        margin-top: 50%;
-        transform: translateY(-20%);
     }
 
     h1{

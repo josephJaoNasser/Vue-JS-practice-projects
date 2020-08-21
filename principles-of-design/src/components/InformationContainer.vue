@@ -11,7 +11,7 @@
                     <v-card-title class="principle">
                         <b>{{p.principle}}</b>
                     </v-card-title>
-                    <v-card-text class="text-left regular-text">
+                    <v-card-text class="principle-desc text-left regular-text">
                         {{p.description}}
                     </v-card-text>
                     <br>
@@ -70,6 +70,33 @@ export default {
 
     .principle-icon{
         font-size: 7em!important;
+    }
+
+    .principle-desc{
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    /* width */
+    .principle-desc::-webkit-scrollbar {
+    width: 10px;
+    }
+
+    /* Track */
+    .principle-desc::-webkit-scrollbar-track {
+    background: rgb(182, 182, 182);
+    border-radius: 30px;
+    }
+
+    /* Handle */
+    .principle-desc::-webkit-scrollbar-thumb {
+    background: #015fa9;
+    border-radius: 30px;
+    }
+
+    /* Handle on hover */
+    .principle-desc::-webkit-scrollbar-thumb:hover {
+    background: #555;
     }
 
 </style>

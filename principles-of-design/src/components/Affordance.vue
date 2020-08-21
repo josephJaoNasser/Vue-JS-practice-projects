@@ -1,6 +1,11 @@
 <template>
     <div class="affordance-interactions">
-        aff
+        <h2 class="mb-2">What does this thing do?</h2>
+        <v-text-field
+            label="What is my purpose in life..."
+            outlined
+            :dark="true"
+        ></v-text-field>
     </div>
     
     
