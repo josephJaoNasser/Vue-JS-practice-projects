@@ -52,7 +52,6 @@ export default {
 
     .info-main-container{
         background-color: #ddd;
-        
         border-radius: 5px;
     }
     .regular-text{
@@ -65,7 +64,9 @@ export default {
     .principle{
         font-family: 'Frank Ruhl Libre', serif;
         font-size: 3em;
-        color:#015fa9
+        color:#015fa9;
+        width: 90%;
+        margin: 0 auto;
     }
 
     .principle-icon{
@@ -75,6 +76,8 @@ export default {
     .principle-desc{
         max-height: 200px;
         overflow-y: auto;
+        width: 90%;
+        margin: 0 auto;
     }
 
     /* width */

@@ -60,7 +60,6 @@ export default {
     h1{
         font-family: 'Frank Ruhl Libre', serif;
         color: white;
-        
     }
 
 </style>

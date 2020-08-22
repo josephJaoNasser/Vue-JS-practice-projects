@@ -13,7 +13,7 @@
     },
     {
         "id":3,
-        "icon": "fa-eye",
+        "icon": "far fa-lightbulb",
         "principle": "Affordance",
         "description":"Affordance is the relationship between what something looks like and how it's used."
     },

@@ -1,12 +1,11 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <!--router-link to="/">Home</router-link-->
-      <!--router-link to="/about">About</router-link-->
-    </div>
-    <router-view/>
-  </div>
+  <v-app id="app">
+    <transition name="slide-x-transition">
+      <router-view/>
+    </transition>
+  </v-app>
 </template>
+
 
 <style lang="scss">
 
@@ -17,12 +16,12 @@
   text-align: center;
   color: #2c3e50;
   background-color: #015fa9;
-  
 }
+
 
 #nav {
   padding: 30px;
-
+  
   a {
     font-weight: bold;
     color: #2c3e50;

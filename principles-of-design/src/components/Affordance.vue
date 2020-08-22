@@ -1,11 +1,11 @@
 <template>
     <div class="affordance-interactions">
-        <h2 class="mb-2">What does this thing do?</h2>
-        <v-text-field
-            label="What is my purpose in life..."
-            outlined
-            :dark="true"
-        ></v-text-field>
+        <v-card class="py-4 px-5">
+            <v-card-title class="px-1">What does this thing do?</v-card-title>
+            <v-text-field
+                label="What is my purpose in life..."
+            ></v-text-field>
+        </v-card>
     </div>
     
     
