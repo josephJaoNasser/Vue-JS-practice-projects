@@ -7,11 +7,12 @@
             label="You know what i do..."
             ></v-text-field>
             <v-container layout>
-                <v-switch
+                <v-switch class="mx-6"
                 label="I am a switch"
                 ></v-switch>
 
-                <v-checkbox></v-checkbox>
+                <v-checkbox class="mx-5"
+                label="I am a checkbox"></v-checkbox>
             </v-container>
             
 

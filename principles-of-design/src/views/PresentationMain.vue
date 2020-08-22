@@ -1,5 +1,6 @@
 <template>
-  <div class="presentation-main">      
+  <div class="presentation-main">  
+    
     <v-main>
       <v-container
         class="fill-height"
@@ -16,6 +17,8 @@
         </v-row>
       </v-container>
     </v-main>
+    <router-link to="/">Done</router-link>    
+    
   </div>
 </template>
 
@@ -33,16 +36,19 @@ export default {
 
 <style scoped>
 
+  a{
+    text-decoration: none;
+    color: white!important;
+  }
+
   .presentation-main
   {
-    padding-top: 5em;
+    padding-top: 4em;
   }
 
   .presentation-area{
     display: grid;
-    grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr;
-    grid-gap: 1em;
     padding: 0 2em;
   }
 </style>

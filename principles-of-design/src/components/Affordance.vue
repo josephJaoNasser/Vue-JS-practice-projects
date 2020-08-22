@@ -4,6 +4,7 @@
             <v-card-title class="px-1">What does this thing do?</v-card-title>
             <v-text-field
                 label="What is my purpose in life..."
+                filled
             ></v-text-field>
         </v-card>
     </div>
