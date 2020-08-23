@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import PresentationMain from '../views/PresentationMain.vue'
+import Norman from '../views/Norman.vue'
 
 Vue.use(VueRouter)
 
@@ -18,6 +19,14 @@ Vue.use(VueRouter)
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: PresentationMain
+  },
+  {
+    path: '/Norman',
+    name: 'Norman',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: Norman
   }
 ]
 

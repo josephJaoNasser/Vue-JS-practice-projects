@@ -16,7 +16,7 @@
             >
               <h1 >Norman's 6 principles of design</h1>
                <p class="font-weight-thin my-5">A brief presentation by Jay Nasser</p>
-              <router-link to="/PresentationMain">
+              <router-link to="/Norman">
                 <v-btn class="h1">Let's go!</v-btn>
               </router-link>
              

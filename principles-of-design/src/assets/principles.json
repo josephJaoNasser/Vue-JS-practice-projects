@@ -21,7 +21,7 @@
         "id":4,
         "icon": "fas fa-map-marker-alt",
         "principle": "Mapping",
-        "description":"Mapping is the relationship between control and effect. The idea is that with good design, the controls to something will closely resemble what they affect."
+        "description":"Mapping is the relationship between control and effect. The idea is that with good design, the controls will closely resemble what they affect."
     },
     {
         "id":5.1,
@@ -33,13 +33,13 @@
         "id":5,
         "icon": "far fa-times-circle",
         "principle": "Constraints",
-        "description":"Some are really obvious and physical, for example the screen size on a phone. Others are more nuanced, like a single, continuous page website having an image peeking onto the main page. "
+        "description":"Some are really obvious and physical, others are more nuanced. "
     },
     {
         "id":6,
         "icon": "fa-sync-alt",
         "principle": "Consistency",
-        "description":"The same action has to cause the same reaction, every time."
+        "description":"The same action has to cause the same reaction, every time; even if you switch from one interface to another, or one website/page to another."
     }
 
 ]
