@@ -1,7 +1,7 @@
 <template>
     <v-app class="interact-main-container">
         <h1>Example:</h1>
-        <transition-group name="slide-x-transition" >
+        <transition-group name="slide-x-transition" mode="out-in">
             <Visibility  v-if="exampleShown == 1" :key="1"/>
             <Feedback  v-if="exampleShown == 2" :key="2"/>
             <Affordance  v-if="exampleShown == 3" :key="3"/>

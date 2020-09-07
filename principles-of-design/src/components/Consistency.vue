@@ -14,6 +14,14 @@
                 <v-checkbox class="mx-5"
                 label="I am a checkbox"></v-checkbox>
             </v-container>
+
+            <v-card-title>BAD EXAMPLES</v-card-title>
+            <v-container layout>
+                <v-btn class="mx-2" color="red" dark>SUBMIT</v-btn>
+                <v-btn  class="mx-2" color="green" dark>SUBMIT</v-btn>
+                <v-btn  class="mx-2" color="blue" dark >SUBMIT</v-btn>
+                <v-btn  class="mx-2" color="green" dark >CANCEL</v-btn>
+            </v-container>
             
 
             <v-card-title class="blue--text">Signs and symbols:</v-card-title>
