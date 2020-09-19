@@ -1,4 +1,3 @@
-
 //initialize dependencies
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -13,10 +12,10 @@ app.use(cors());
 
 //initialize routes
 const posts = require('./routes/api/posts');
-const randomStuff = require('./routes/api/randomStuff');
+const randomStuff = require('./routes/api/userManagement');
 
 app.use('/api/posts', posts);
-app.use('/api/randomStuff', randomStuff);
+app.use('/api/userManagement', randomStuff);
 
 //handle production
 if(process.env.NODE_ENV === 'production'){

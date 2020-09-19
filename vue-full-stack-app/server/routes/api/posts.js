@@ -6,11 +6,11 @@ const router = express.Router();
 //DB CONNECTION
 async function loadPostCollection(){
     const client = await mongodb.MongoClient.connect
-    ('mongodb+srv://jjnasser:JayNasser7!@cluster0.yjzbg.mongodb.net/Cluster0?retryWrites=true&w=majority', {
+    ('mongodb+srv://jjnasser:JayNasser7!@simplepostscluster.yjzbg.mongodb.net/SimplePostsCluster?retryWrites=true&w=majority', {
         useNewUrlParser:true
     });
 
-    return client.db('Cluster0').collection('posts');
+    return client.db('SimplePostsCluster').collection('posts');
 }
 
 module.exports = router;
@@ -30,7 +30,7 @@ router.post('/', async (req, res) =>{
     await posts.insertOne({
         text: req.body.text,
         createdAt: new Date(),
-        createdBy: "Ya boi jay!!"
+        createdBy: "..."
     });
 
     res.status(201).send();

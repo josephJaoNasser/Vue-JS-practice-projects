@@ -1,11 +1,11 @@
 <template>
   <div class="post-component-main">
     <div class="posting-area">
-      <label for="create-post" style="margin-right: 15px">Create a post </label>
-      <input type="text" id="create-post" style="margin-right: 15px" v-model="text" placeholder="Say something...">
-      <button v-on:click="createPost">Post</button>
+      <br>
+      <textarea type="text" id="create-post" style="margin-right: 15px" v-model="text" placeholder="Say something..."></textarea>
+      <button class="btn-post" v-on:click="createPost">Post</button>
     </div>
-    <hr>
+    
     <div class="post-container">         
 
       <div class="hollow-dots-spinner" v-if="fetching && !error">
@@ -36,7 +36,7 @@
           </small>
         </p>
 
-        <button class="btn-delete" v-on:click="deletePost(post._id)">X</button>
+        <button class="btn-delete" v-on:click="deletePost(post._id)">Delete</button>
 
         </div>        
       </transition-group>
@@ -126,6 +126,15 @@ export default {
   margin-top: 1em;
 }
 
+.posting-area::after{
+  content: "";
+  display: block;
+  width: 100%;
+  height: 5px;
+  margin-top: 1em;
+  background-color: #42b983;
+}
+
 .status{
   padding: 1em;
   font-style: italic;
@@ -133,17 +142,31 @@ export default {
 }
 
 .post{
-  background-color: #303030;
-  color: white;
+  color: black;
   padding: 10px;
   margin: 1em;
-  border-radius: 5px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  line-height: 1.4em;
 }
 
-.posting-area input[type=text]{
+.posting-area textarea{
   padding: 1em;
-  font-size: 14px;
-  width: auto;
+  border: none;
+  border-radius: 1em;
+  background: #efefef;
+  margin-bottom: 10px;
+  font-size: 16px;
+  width: 100%;
+  height: 100px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  resize: none;
+}
+
+.posting-area textarea:focus{
+  outline: none;
 }
 
 .error{
@@ -161,13 +184,36 @@ export default {
   position: relative;
   float: right;
   border: none;
-  background-color: rgb(145, 0, 0);
-  color: white;
-  height: 40px;
-  width: 40px;
-  border-radius: 100%;
-  margin-top: -60px;
+  color: rgb(200, 0, 0);
+  background-color: white;
+  border-radius: 1em;
+  padding: 1em 2em;
+  margin-top: -40px;
   margin-right: 10px;
+}
+
+.btn-delete:hover{
+  cursor: pointer;
+  color: white;
+  background-color: rgb(200, 0, 0);
+}
+
+.btn-post{
+  color: white;
+  font-weight: bold;
+  padding: 1em 3em;
+  font-size: 1em;
+  border-radius: 4em;
+  border: none;
+  background-color: #42b983;
+}
+
+.btn-post:focus{
+  outline: none;
+}
+
+.btn-post:hover{
+  cursor: pointer;
 }
 
 .fade-enter-active, .fade-leave-active {
