@@ -16,6 +16,7 @@ export default class PostService{
                 //if successful, resolve() will return the data
                 resolve(
                     //map() is a high level iterator. It can also return arrays
+                    //anything can be named for the parameter of the map arrow function
                     data.map(thePassedPost => ({
                         ...thePassedPost,
                         createdAt: new Date(thePassedPost.createdAt)                        
@@ -40,7 +41,7 @@ export default class PostService{
     //update posts
     static updatePost(text,id){
         return axios.put(url+id, {            
-            text: text
+            text
         })
     }
 

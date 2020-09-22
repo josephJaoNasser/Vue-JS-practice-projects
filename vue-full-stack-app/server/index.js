@@ -12,10 +12,10 @@ app.use(cors());
 
 //initialize routes
 const posts = require('./routes/api/posts');
-const randomStuff = require('./routes/api/userManagement');
+const userManagement = require('./routes/api/userManagement');
 
 app.use('/api/posts', posts);
-app.use('/api/userManagement', randomStuff);
+app.use('/api/userManagement', userManagement);
 
 //handle production
 if(process.env.NODE_ENV === 'production'){

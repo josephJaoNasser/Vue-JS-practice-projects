@@ -1,7 +1,6 @@
 const { text } = require('body-parser');
 const express = require('express');
 const mongodb = require('mongodb');
-const { route } = require('./userManagement');
 
 const router = express.Router();
 
