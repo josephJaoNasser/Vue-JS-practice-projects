@@ -18,14 +18,13 @@ export default class PostService{
                     //map() is a high level iterator. It can also return arrays
                     data.map(thePassedPost => ({
                         ...thePassedPost,
-                        createdAt: new Date(thePassedPost.createdAt)
+                        createdAt: new Date(thePassedPost.createdAt)                        
                     }))
                 );
+                
             }).catch((err)=> {
                 reject(err);
             })
-
-           
             
         });
 
@@ -35,6 +34,13 @@ export default class PostService{
     static insertPost(text){
         return axios.post(url, {
             text
+        })
+    }
+
+    //update posts
+    static updatePost(text,id){
+        return axios.put(url+id, {            
+            text: text
         })
     }
 

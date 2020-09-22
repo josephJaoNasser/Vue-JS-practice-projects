@@ -1,10 +1,21 @@
+const { text } = require('body-parser');
 const express = require('express');
 const mongodb = require('mongodb');
+const { route } = require('./userManagement');
 
 const router = express.Router();
 
 //DB CONNECTION
 async function loadPostCollection(){
+
+    //Local mongoDB connection
+    // const client = await mongodb.MongoClient.connect
+    // ('mongodb://localhost:27017/', {
+    //     useNewUrlParser:true
+    // });
+
+    
+    //MongoDB atlas connection
     const client = await mongodb.MongoClient.connect
     ('mongodb+srv://jjnasser:JayNasser7!@simplepostscluster.yjzbg.mongodb.net/SimplePostsCluster?retryWrites=true&w=majority', {
         useNewUrlParser:true
@@ -23,6 +34,8 @@ router.get('/', async (req, res) => {
     res.send(await posts.find({}).toArray());
 });
 
+//Search posts
+
 
 //Add posts
 router.post('/', async (req, res) =>{
@@ -35,6 +48,17 @@ router.post('/', async (req, res) =>{
 
     res.status(201).send();
 });
+
+//Update posts
+router.put('/:id', async (req, res) =>{
+    const posts = await loadPostCollection();
+    await posts.updateOne(
+        {_id: new mongodb.ObjectID(req.params.id)},
+        {$set: {text: req.body.text, updatedAt: new Date()}}       
+    )
+
+    res.status(201).send();
+})
 
 
 //Delete posts
