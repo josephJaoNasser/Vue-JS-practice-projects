@@ -14,12 +14,11 @@
 </template>
 
 <script>
-import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'PostComponent',
-  computed: mapGetters(['loadingStates']),
+  computed: mapGetters(['loadingStates','currentUser']),
   data(){
     return{
       text: '',
@@ -29,7 +28,7 @@ export default {
   },
   methods: {
     createPost(){
-      this.$store.dispatch('createPost', {text: this.text, createdBy: 'Jay'})
+      this.$store.dispatch('createPost', {text: this.text, user: this.currentUser})
       this.text = ''
     }
     

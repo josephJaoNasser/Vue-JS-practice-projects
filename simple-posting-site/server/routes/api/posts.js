@@ -23,8 +23,7 @@ async function loadPostCollection(){
 module.exports = router;
 
 //Get posts
-router.get('/', async (req, res) => {
-    
+router.get('/', async (req, res) => {    
     const posts = await loadPostCollection();
     res.send(await posts.find({}).toArray());
 });
@@ -41,7 +40,7 @@ router.post('/', async (req, res) =>{
         _id: this._id,
         text: req.body.text,
         createdAt: new Date(),
-        createdBy: req.body.createdBy
+        user: req.body.user
     });
 
     data = await posts.findOne({_id: insertion.insertedId});        

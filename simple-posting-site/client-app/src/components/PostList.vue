@@ -14,9 +14,10 @@
             </div> 
           </div>   
         </transition>  
-      <transition name="fade" >
-        <p class="error" v-if="this.errors">{{this.errors}}</p>
+      <transition name="fade">
+        
       </transition>
+      <p class="error" v-if="this.errors">{{this.errors}}</p>
       
       
       <transition-group name="list-complete">
@@ -28,30 +29,12 @@
           v-bind:class="{'transparent' : (loadingStates.fetchingPost || loadingStates.sendingPost ||
             loadingStates.updatingPost || loadingStates.deletingPost)}"
         >   
-            <b-dropdown id="dropdown-right" right no-caret html="<i class='fas fa-ellipsis-v'></i>" variant="light" class="m-2 float-right">
-              <b-dropdown-item-button variant="warning" button-class="btn-update py-3" @click="$emit('updating-post',post)">
-                <i class="far fa-edit"></i> Edit 
-              </b-dropdown-item-button>
-              <b-dropdown-item-button variant="danger" active-class="danger" button-class="btn-delete py-3" @click="deletePost(post._id)">
-                <i class="far fa-trash-alt"></i> Delete
-              </b-dropdown-item-button>
-            </b-dropdown>
-          
-            <transition name="fade">
-                <p class="post-text">
-                {{post.text}}
-                </p>
-            </transition>        
+            <PostItem 
+              v-bind:post="post" 
+              v-on:updating-post="$emit('updating-post',post)"
+              v-on:deleting-post="$emit('deleting-post',post)"
+            />
 
-            <p class="post-date">
-              <small v-if="!post.updatedAt">
-                <i>Posted on {{getDateAndTime(post.createdAt)}}</i>
-              </small>
-              <small v-if="post.updatedAt">
-                <i>Updated on {{`${getDateAndTime(new Date(post.updatedAt))}`}}</i>
-              </small>
-            </p>        
-           
         </div>      
       </transition-group>
      
@@ -59,28 +42,33 @@
 </template>
 
 <script>
+import PostItem from '@/components/PostItem'
 import { mapGetters, mapActions } from 'vuex'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+// import '@fortawesome/fontawesome-free/css/all.css'
+// import '@fortawesome/fontawesome-free/js/all.js'
 
 export default {
     name: 'PostList',
+    components: {
+      PostItem
+    },
     computed:{ 
       ...mapGetters({
         allPosts: 'allPosts',
         loadingStates: 'loadingStates',
-        errors: 'errors'})
+        errors: 'postErrors'
+      }),  
     } ,
     data() {
       return {
-      posts: [],       
-      monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-      ]
-      
+        monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ],
+        
       }
+      
     },
-    async created(){   
+    async created(){              
       this.loadPosts().then(() =>{  
         setInterval( () => {
             this.loadPosts(); 
@@ -90,30 +78,17 @@ export default {
     },
     methods: {
 
-      ...mapActions(['loadPosts','deletePost']),
+      ...mapActions(['loadPosts']),
 
-      getDateAndTime(value){
-          return `${this.monthNames[value.getMonth()]} ${value.getDate()}, ${value.getFullYear()} at ${this.formatAMPM(value)}`
-      },
-
-        getSinglePost(postID,postText){
-          const thePost = {
-              id: postID,
-              text: postText
-          }
-
-          return thePost
-      },
-
-        formatAMPM(date) {
-          var hours = date.getHours();
-          var minutes = date.getMinutes();
-          var ampm = hours >= 12 ? 'PM' : 'AM';
-          hours = hours % 12;
-          hours = hours ? hours : 12; // the hour '0' should be '12'
-          minutes = minutes < 10 ? '0'+minutes : minutes;
-          var strTime = hours + ':' + minutes + ' ' + ampm;
-          return strTime;
+      formatAMPM(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
       }
     }
 }
@@ -131,14 +106,12 @@ export default {
 {
   position: absolute;
   background-color: white;
-  z-index: 999;
+  z-index: 998;
   border-radius: 20px;
   padding: 1em;
   left: 50%;
   transform: translateX(-50%);
-  -webkit-box-shadow: -1px 3px 11px -5px rgba(0,0,0,0.75);
-  -moz-box-shadow: -1px 3px 11px -5px rgba(0,0,0,0.75);
-  box-shadow: -1px 3px 11px -5px rgba(0,0,0,0.75);
+  
 }
 
 .post-date{
@@ -165,6 +138,7 @@ export default {
 
 .post{
   color: black;
+  background-color: white;
   padding: 10px;
   margin: 1em;
   border-bottom: 1px solid #ddd;

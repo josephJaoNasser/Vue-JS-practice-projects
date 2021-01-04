@@ -1,33 +1,45 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import RegistrationPage from '../views/RegistrationPage.vue'
-import Login from '../views/Login.vue'
-import Profile from '../views/Profile.vue'
-
+// import Home from '../views/Home.vue'
+// import RegistrationPage from '../views/RegistrationPage.vue'
+// import Login from '../views/Login.vue'
+// import Profile from '../views/Profile.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/home',
+    path: '/',
     name: 'Home',
-    component: Home
+    component: () =>  import(/* webpackChunkName: "home page" */'../views/Home.vue'),
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/register',
     name: 'Register',
-    component: RegistrationPage
+    component: () =>  import(/* webpackChunkName: "register page" */'../views/RegistrationPage.vue'),
+    meta: {
+      requiresGuest: true
+    }
   },
   {
-    path: '/',
+    path: '/login',
     name: 'Login',
-    component: Login
+    component: () =>  import(/* webpackChunkName: "login page" */'../views/Login.vue'),
+    meta: {
+      requiresGuest: true
+    }
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: Profile
+    component: () =>  import(/* webpackChunkName: "profile page" */'../views/Profile.vue'),
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 
@@ -36,5 +48,29 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+
+//route protection
+router.beforeEach((to, from, next)=>{
+  if(to.matched.some(record => record.meta.requiresAuth)){
+    if(!(store.getters.isLoggedIn && store.getters.currentUser)){
+      //redirect to login page
+      next('/login');
+    }else{
+      next();
+    }
+  }
+  else if(to.matched.some(record => record.meta.requiresGuest)){
+    if(store.getters.isLoggedIn && store.getters.currentUser){
+      //redirect to login page
+      next('/');
+    }else{
+      next();
+    }
+  }
+  else{
+    next();
+  }
+});
 
 export default router
