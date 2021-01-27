@@ -1,9 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Home from '../views/Home.vue'
-// import RegistrationPage from '../views/RegistrationPage.vue'
-// import Login from '../views/Login.vue'
-// import Profile from '../views/Profile.vue'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -12,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () =>  import(/* webpackChunkName: "home page" */'../views/Home.vue'),
+    component: () =>  import(/* webpackChunkName: "home-page" */'../views/Home.vue'),
     meta: {
       requiresAuth: true
     }
@@ -20,7 +16,15 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: () =>  import(/* webpackChunkName: "register page" */'../views/RegistrationPage.vue'),
+    component: () =>  import(/* webpackChunkName: "register-page" */'../views/RegistrationPage.vue'),
+    meta: {
+      requiresGuest: true
+    }
+  },
+  {
+    path: '/registration-success',
+    name: 'Successfully Registered!',
+    component: () =>  import(/* webpackChunkName: "register-page" */'../views/RegisterSuccess.vue'),
     meta: {
       requiresGuest: true
     }
@@ -28,7 +32,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () =>  import(/* webpackChunkName: "login page" */'../views/Login.vue'),
+    component: () =>  import(/* webpackChunkName: "login-page" */'../views/Login.vue'),
     meta: {
       requiresGuest: true
     }
@@ -36,7 +40,7 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile',
-    component: () =>  import(/* webpackChunkName: "profile page" */'../views/Profile.vue'),
+    component: () =>  import(/* webpackChunkName: "profile-page" */'../views/Profile.vue'),
     meta: {
       requiresAuth: true
     }

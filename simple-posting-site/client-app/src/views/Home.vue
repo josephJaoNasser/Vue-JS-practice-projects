@@ -1,7 +1,16 @@
 <template>
   <div class="home-main-container"> 
+    <MobileUserBar 
+      v-if="this.currentWidth < 1280"
+    />
+
+    <div class="component-container">
+      <UserCard 
+        style="position: fixed"
+        v-if="this.currentWidth > 1280"
+        />
+    </div>
     
-    <UserCard />
     
     <h1 class="text-left font-weight-bold mb-0 mt-3">Home</h1>
     
@@ -11,6 +20,7 @@
         v-if="this.updatePost._id" 
         v-bind:post="this.updatePost"/>      
     </transition>
+    
 
     <transition name="fade">            
       <ConfirmDeleteModal 
@@ -19,41 +29,64 @@
         v-on:delete-modal-closed="deletePost = []" 
       />    
     </transition>
-
     
-    <PostComponent />    
-    
-    <PostList 
-      v-on:updating-post="setUpdatePost"
-      v-on:deleting-post="setDeletePost"
-    />
+    <div class="component-container">
+      <PostComponent />   
+    </div>
+     
+    <div class="post-list-container component-container">
+      <PostList 
+        v-on:updating-post="setUpdatePost"
+        v-on:deleting-post="setDeletePost"
+      />
+    </div>
       
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import PostList from '@/components/PostList.vue'
-// import PostComponent from '@/components/PostComponent.vue'
-// import PostUpdateComponent from '@/components/PostUpdateComponent.vue'
-// import UserCard from '@/components/UserCard.vue'
-// import ConfirmDeleteModal from '../components/ConfirmDeleteModal.vue'
 import { mapGetters } from 'vuex'
+import LoadingComponent from '@/components/LoadingComponents/LoadingComponent.vue'
+import ErrorComponent from '@/components/ErrorComponents/ErrorComponent.vue'
+
+/* pre-define components */
+const PostComponent = () => ({
+  component: import(/* webpackChunkName: "post-component" */'@/components/PostComponents/PostComponent.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+});
+
+const PostList = () => ({
+  component: import(/* webpackChunkName: "post-component" */'@/components/PostComponents/PostList.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+});
+
+const UserCard = () => ({
+  component: import(/* webpackChunkName: "user-card-component" */'@/components/UserComponents/UserCard.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+})
 
 export default {
   name: 'Home',
-  computed: mapGetters(['loadingStates','currentUser']),
+  computed: mapGetters(['postLoadingStates','currentUser']),
   components: {
-    PostComponent: ()=> import('@/components/PostComponent.vue'),
-    PostUpdateComponent: ()=> import('@/components/PostUpdateComponent.vue'),
-    PostList: ()=> import('@/components/PostList.vue'),
-    UserCard: ()=> import('@/components/UserCard.vue'),
-    ConfirmDeleteModal: ()=> import('@/components/ConfirmDeleteModal.vue')
+    PostComponent,    
+    PostList,
+    UserCard,
+    ConfirmDeleteModal: ()=> import(/* webpackChunkName: "confirm-delete-modal-component" */'@/components/PostComponents/ConfirmDeleteModal.vue'),
+    PostUpdateComponent: ()=> import(/* webpackChunkName: "post-update-component" */'@/components/PostComponents/PostUpdateComponent.vue'),
+    MobileUserBar: () => import(/* webpackChunkName: "mobile-user-bar" */'@/components/UserComponents/MobileUserBar.vue')
   },
   data(){
     return {
       updatePost: [],
-      deletePost: []
+      deletePost: [],
+      currentWidth: 0
     }
   },
   methods: {    
@@ -64,7 +97,14 @@ export default {
     setDeletePost(post){
       this.deletePost = post
     }
-  }
+  },
+  created(){
+      this.currentWidth = window.innerWidth
+      window.addEventListener('resize', () => {
+         this.currentWidth = window.innerWidth
+      })
+      
+   }
 }
 </script>
 
@@ -72,6 +112,15 @@ export default {
 .home-main-container{
   width: 50vw;
   margin: 0 auto;
+}
+
+.post-list-container::before{
+  content: "";
+  display: block;
+  width: 100%;
+  height: 5px;
+  margin-top: 1em;
+  background-color: #42b983;
 }
 
 

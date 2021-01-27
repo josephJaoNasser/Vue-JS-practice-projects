@@ -29,24 +29,76 @@ module.exports = router;
 router.post('/register',async (req,res) =>{
 
     const users = await loadUsersCollection();
-    
-    //password check
+
+    //check if user typed in a proper username
+    if(req.body.username.length < 1){
+        return res.status(400).json({
+            msg: 'Please type in a username!',
+            field: 'username'
+        });    
+    }
+    else if(req.body.username.length > 15){
+        return res.status(400).json({
+            msg: 'Username must be less than 16 characters',
+            field: 'username'
+        });   
+    }
+    else if (/\s/.test(req.body.username)) {
+        return res.status(400).json({
+            msg: 'Username must not contain any spaces',
+            field: 'username'
+        });   
+    }
+
+    //find existing/duplicate username
+    let user = await users.findOne({uname: req.body.username});
+    if(user){
+        return res.status(400).json({
+            msg: 'This username has already been registered!',
+            field: 'username' 
+        });      
+    } 
+
+    //check if user typed in a display name
+    if(req.body.displayName.length < 1){
+        return res.status(400).json({
+            msg: 'Please type in a display name!',
+            field: 'displayName'
+        });    
+    }
+    else if(req.body.displayName.length >50){
+        return res.status(400).json({
+            msg: 'Display Name must be 50 characters or less!',
+            field: 'displayName'
+        });   
+    }
+
+    //check if password is at least 6 characters
+    if(req.body.password.length < 6){
+        return res.status(400).json({
+            msg: 'Password must be at least 6 characters!',
+            field: 'password'
+        });    
+    }
+
+    //check if password is at least 6 characters
     if(req.body.password !== req.body.confirm_password){
         return res.status(400).json({
-            msg: 'Passwords do not match...',
+            msg: 'Passwords do not match!',
             field: 'password'
         });      
         
     }
 
-     //find existing/duplicate username
-     let user = await users.findOne({uname: req.body.username});
-     if(user){
+     //check propper email format
+     const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;   
+     if(!emailRegex.test(req.body.email)){
          return res.status(400).json({
-             msg: 'This username has already been registered!',
-             field: 'username' 
-         });      
-     } 
+             msg: 'Please input a valid e-mail address!',
+             field: 'email'
+         });
+     }
+     
 
     //find existing/duplicate email
     user = await users.findOne({email: req.body.email});
@@ -88,7 +140,7 @@ router.post('/login', async(req, res) =>{
     if(!user){
         return res.status(404).json({
             success: false,
-            msg: "This username isn't registered!"
+            msg: "This user does not exist!"
         })
     }
     else{

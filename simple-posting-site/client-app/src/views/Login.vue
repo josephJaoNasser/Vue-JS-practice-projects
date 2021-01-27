@@ -14,9 +14,17 @@
           </div>   
       </transition>  
       <div class="login-box absolute-center" v-bind:class="{'transparent': this.userLoadingStates.loggingIn}">
+         
          <input type="text" placeholder="Username" v-model="username">
          <br>
          <input type="password" placeholder="Password" v-model="password"> 
+
+         <transition name="slide">
+            <div class="error error-box" v-if="this.userErrors.msg">
+               {{this.userErrors.msg}}
+            </div>
+         </transition>
+
          <br>
          <input type="submit" class="login-btn green" value="Login" @click="login">
          <br>
@@ -27,8 +35,7 @@
 
 <script>
 import {mapGetters} from 'vuex'
-export default {
-   
+export default {   
    computed: mapGetters(['userLoadingStates', 'userErrors']),
    data() {
       return {
@@ -47,11 +54,11 @@ export default {
             if(res.data.success){
                this.$router.push('/')
             }
-            else{
-               //show the error message somehow UwU
-            }
          })
       }
+   },
+   created() {
+      this.$store.dispatch('clearUserStates')
    },
 }
 </script>

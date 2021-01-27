@@ -12,7 +12,7 @@ const state = {
    token: localStorage.getItem('token') || '',
    user: {},
    status: '',
-   registrationError: ''
+   UserErrors: {}
 }
 
 const getters = {
@@ -20,7 +20,7 @@ const getters = {
    isLoggedIn: (state) => !!state.token,
    authState: (state) => state.status,
    currentUser: (state) => state.user,
-   userErrors: (state) => state.registrationError,
+   userErrors: (state) => state.UserErrors,
 }
 
 const actions = {
@@ -55,7 +55,7 @@ const actions = {
          axios.defaults.headers.common['Authorization'] = res.data.token;
          
          commit('login_success',res);           
-      }       
+      }
       return res;
            
    },
@@ -66,6 +66,11 @@ const actions = {
       delete axios.defaults.headers.common['Authorization'];
       commit('logout');
       return;      
+   },
+
+   //clear states (because of vuex persistedstate)
+   clearUserStates({commit}){
+      commit('clr_user_states')
    }
 }
 
@@ -76,20 +81,19 @@ const mutations = {
    registration_success: (state) => state.loadingStates.registeringUser = false,
 
    registration_err: (state, err) => {
-      state.errors = {
+      state.UserErrors = {
          error_type: 'Registration error', 
+         field: err.field,
          msg: err.msg
       }
-      console.log(state.errors.msg)
       state.loadingStates.registeringUser = false
    },
 
    login_failed: (state, err) => {
-      state.errors = {
+      state.UserErrors = {
          error_type: 'Login error', 
          msg: err.msg
       }
-      console.log(state.errors.msg)
       state.loadingStates.loggingIn = false
    },
 
@@ -104,6 +108,16 @@ const mutations = {
    logout: (state) => {
       state.token = '',
       state.user = ''
+   },
+
+   clr_user_states: (state) => {
+      state.loadingStates = {
+         registeringUser: false,
+         loggingIn: false,
+         msg: ''
+      };
+
+      state.UserErrors = {}
    }
 }
 

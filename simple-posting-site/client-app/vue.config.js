@@ -12,6 +12,11 @@ module.exports = {
         }
     },
     configureWebpack: {
-        plugins: [new BundleAnalyzerPlugin(), new BootstrapVueLoader()]
+        plugins: [new BundleAnalyzerPlugin(), new BootstrapVueLoader()],
+        resolve: {
+            alias:{
+                moment: 'moment/src/moment'
+            }
+        }
     }
 }

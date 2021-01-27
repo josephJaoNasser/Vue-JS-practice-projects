@@ -17,7 +17,7 @@ const state = {
 
 const getters = {
    allPosts: (state) => state.posts,
-   loadingStates: (state) => state.loadingStates,
+   postLoadingStates: (state) => state.loadingStates,
    postErrors: (state) => state.postsError
 };
 
@@ -40,13 +40,13 @@ const actions = {
    },
 
    //insert posts
-   async createPost({ commit }, newPostObject){    
+   async createPost({ commit }, newPostObject){   
       state.loadingStates.sendingPost = true
       const res = await axios.post(url, {
          text: newPostObject.text,
          user: newPostObject.user
       }) 
-     commit('newPost',res.data);
+     commit('post_sent',res.data);
    },
 
    //delete posts
@@ -62,7 +62,7 @@ const actions = {
       const res = await axios.put(`${url}${updatedPostObject.id}`, 
       updatedPostObject
       );
-     
+      
      commit('editPost',res.data)
    },
 
@@ -83,7 +83,7 @@ const mutations = {
       state.postsError = error
    },
    
-   newPost: (state, post) => {
+   post_sent: (state, post) => {      
       post.createdAt = new Date(post.createdAt);
       state.posts.push(post);
       state.loadingStates.sendingPost = false;

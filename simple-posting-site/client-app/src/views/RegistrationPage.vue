@@ -1,5 +1,8 @@
 <template>
    <div class="reg-main-container">
+      <div class="registration-page-header">
+         <h1>Create an account</h1>
+      </div>
       <transition name="fade" >
           <div 
             class="loading-animation"
@@ -12,75 +15,50 @@
                 <div class="dot"></div>
             </div> 
           </div>   
-      </transition>  
-      <div class="registration-container absolute-center" 
-         v-bind:class="{'transparent' : this.userLoadingStates.registeringUser}"
-      >
-         <h1 class="green-text">Create an account</h1>
-         <h5>Username</h5>
-         <input type="text" v-model="username" maxlength="16"/><br>
-         <h5>Display Name</h5>
-         <input type="text" v-model="displayName" maxlength="16"/><br>
-         <h5>Password</h5>
-         <input type="password" v-model="password"/><br>
-         <h5>Confirm Password</h5>
-         <input type="password" v-model="confirm_password"/><br>
-         <h5>E-mail</h5>
-         <input type="email" v-model="email"/><br>
-         <h5>Bio</h5>
-         <textarea v-model="bio"></textarea><br>
+      </transition>
 
-         <button class="green" @click="registerUser()">Submit</button>
-      </div>
-     
+      <RegistrationForm />
       
    </div>   
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-export default {
-   data() {
-      return{
-         username: '',
-         displayName: '',
-         password: '',
-         confirm_password: '',
-         email: '',
-         bio: '',
-         errors: '',
-      }
-   },
-   computed: mapGetters(['userLoadingStates']),
-   methods: {
-      registerUser(){
-         let newUser = {
-            username: this.username,
-            displayName: this.displayName,
-            password: this.password,
-            confirm_password: this.confirm_password,
-            email: this.email,
-            bio: this.bio,
-         }
+import LoadingComponent from '@/components/LoadingComponents/LoadingComponent.vue'
+import ErrorComponent from '@/components/ErrorComponents/ErrorComponent.vue'
+import {mapGetters} from 'vuex'
 
-         try{
-            
-            this.$store.dispatch('registerUser',newUser).then(res => {
-               if(res.data.success){
-                  this.$router.push('/login')
-               }
-            })
-         }
-         catch(err){
-            console.log(err)
-         }      
-      }
-   }
+const RegistrationForm = () => ({
+  component: import(/* webpackChunkName: "registration-form-component" */'@/components/UserComponents/RegistrationForm.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+});
+
+export default {  
+   components: {
+      RegistrationForm
+   },   
+   computed: mapGetters(['userLoadingStates', 'userErrors']),
+   created() {
+      this.$store.dispatch('clearUserStates');
+   },
 }
 </script>
 
 <style>
 @import '../assets/styles/styles.css';
+
+.registration-page-header{
+   flex-direction: column;
+   text-align: left;  
+   background-color: #42b983;
+   padding: 3em 2em 10px ;
+   margin-bottom: 1em;
+}
+
+.registration-page-header > h1{
+   color: white;
+}
 
 .reg-main-container .loading-animation{
    position: absolute;
@@ -91,6 +69,7 @@ export default {
 
 .registration-container{
    width: 50%;
+   margin: 1.5em auto;
    text-align: left;
 }
 
@@ -103,6 +82,12 @@ export default {
    transform: translateX(-50%);
 }
 
-
+@media screen and (max-width: 1024px){
+   .registration-container{
+      width: 90%;
+      margin: 1.5em auto;
+      text-align: left;
+   }
+}
 
 </style>
