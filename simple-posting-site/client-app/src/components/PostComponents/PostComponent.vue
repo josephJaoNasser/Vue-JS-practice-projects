@@ -2,7 +2,7 @@
   <div class="post-component-main">
     <div class="posting-area">
       <br>
-      <textarea type="text" id="create-post" style="margin-right: 15px" v-model="text" placeholder="Say something..."></textarea>
+      <textarea type="text" id="create-post" v-model="text" placeholder="Say something..."></textarea>
       <button :disabled="posting || !text" class="btn-post green" v-on:click="createPost">
         <i v-if="this.postLoadingStates.sendingPost" class="fas fa-circle pulse"></i>
         <span v-else>Post</span>  
@@ -38,5 +38,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+@media screen and (max-width: 600px){
+ .post-component-main{
+   padding: 0 10px;
+ }
+}
 </style>

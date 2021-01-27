@@ -28,6 +28,7 @@ export default {
   height: 65px;
   border-bottom:1px solid #ddd;
   margin-top: 15px;
+  padding: 0 10px;
 } 
 
 .mobile-user-bar-main-div .avatar{
@@ -37,4 +38,6 @@ export default {
    border-radius: 50%;
    float: left;
 }
+
+
 </style>

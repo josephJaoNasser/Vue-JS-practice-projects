@@ -32,7 +32,7 @@
     </b-dropdown>
   
     <p class="post-author">
-      <strong>{{this.post.user.displayName}}</strong>
+      <strong>{{truncate(this.post.user.displayName, 16)}}</strong>
     </p>
     <p class="post-text">
       {{this.post.text}}
@@ -75,6 +75,12 @@ export default {
 
           return thePost
     },
+    truncate(input,limit){        
+        if (input.length > limit) {
+          return input.substring(0, limit) + '...';
+        }
+        return input;
+      }
   }
 }
 </script>

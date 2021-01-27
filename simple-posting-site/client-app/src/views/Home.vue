@@ -12,7 +12,7 @@
     </div>
     
     
-    <h1 class="text-left font-weight-bold mb-0 mt-3">Home</h1>
+    <h1 class="home-header text-left font-weight-bold mb-0 mt-3">Home</h1>
     
     <transition name="fade">                  
       <PostUpdateComponent 
@@ -119,7 +119,6 @@ export default {
   display: block;
   width: 100%;
   height: 5px;
-  margin-top: 1em;
   background-color: #42b983;
 }
 
@@ -129,6 +128,19 @@ export default {
     width: 90vw;
   }
 
+}
+
+@media screen and (max-width: 600px){
+   .home-main-container{
+    width: 100vw;
+  }
+  .post-list-container::before{
+    margin-bottom: 1.5em;
+  }
+
+  .home-header{
+    margin-left: 10px;
+  }
 }
 
 </style>

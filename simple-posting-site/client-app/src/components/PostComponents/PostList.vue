@@ -143,4 +143,10 @@ export default {
   white-space: pre-wrap; 
 }
 
+@media screen and (max-width: 600px){
+  .post{
+    padding: 0 1.2em;
+    margin: 1em 0;
+  }
+}
 </style>
