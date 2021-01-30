@@ -1,8 +1,8 @@
 <template>
   <div class="mobile-user-bar-main-div">
-        <div class="avatar">
+        <a class="avatar" href="/profile">
             <!-- avatar here -->
-         </div>
+         </a>
           <button @click="logout" style="float:right">Logout</button>
      </div>
 </template>

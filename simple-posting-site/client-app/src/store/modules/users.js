@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 const url = "/api/users/";
 
 const state = {
@@ -7,6 +6,7 @@ const state = {
    loadingStates: {
       registeringUser: false,
       loggingIn: false,
+      uploadingImage: false,
       msg: ''
    }, 
    token: localStorage.getItem('token') || '',
@@ -40,11 +40,20 @@ const actions = {
       return res;
    },
 
+   //upload profile image
+   async uploadProfileImage({ commit },profileImage){      
+      commit('upload_profile_img_request')
+      const res = await axios.post(url+'/users/'+ state.user._id +'/profile-image',profileImage).catch((err)=> {
+         console.log(err)
+      })
+      console.log(res);
+      return res
+   },
+
    //login
    async login({ commit }, user){      
       commit('login_request');
-      const res = await axios.post(url+'login', user).catch((err)=>{         
-         //display the error if an error is caught
+      const res = await axios.post(url+'login', user).catch((err)=>{ 
          commit('login_failed',err.response.data);
       })
 
@@ -87,6 +96,16 @@ const mutations = {
          msg: err.msg
       }
       state.loadingStates.registeringUser = false
+   },
+
+   upload_profile_img_request: (state) => state.loadingStates.uploadingImage = true,
+
+   upload_profile_img_failed: (state,err) => {
+      state.UserErrors = {
+         error_type: 'Profile Image error', 
+         msg: err.msg
+      }
+      state.loadingStates.uploadingImage = false
    },
 
    login_failed: (state, err) => {

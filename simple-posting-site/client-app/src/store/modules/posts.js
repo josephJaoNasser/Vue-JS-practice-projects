@@ -24,10 +24,9 @@ const getters = {
 const actions = {
 
    //load posts
-   async loadPosts({ commit }){
+   async loadPosts({ commit },id){
       commit('fetching_post');
-
-      const res = await axios.get(url).catch((err)=>{    
+      const res = await axios.get(`${url}${id ? id: ''}`).catch((err)=>{    
          commit('fetching_post_err',err.message);
       });
 

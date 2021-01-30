@@ -1,22 +1,64 @@
-const { text } = require('body-parser');
+const { text, json } = require('body-parser');
 const express = require('express');
+const multer = require('multer');
+const Grid = require('gridfs-stream');
+const crypto = require('crypto')
+const mongoose = require('mongoose');
+const GridFsStorage = require('multer-gridfs-storage');
 const mongodb = require('mongodb');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const router = express.Router();
 
 //DB CONNECTION
-var mongoUtil = require( '../../mongoUtil' );
-const { realpathSync } = require('fs');
+//Create mongo connection using mongoose
+const connectionString = 'mongodb+srv://jjnasser:yHyXGbJXLhR0PN0G@cluster0.yjzbg.mongodb.net/Cluster0?retryWrites=true&w=majority'
+const conn = mongoose.createConnection(connectionString)
 
-mongoUtil.connectToServer( function( err, client ) {
-    if (err) console.log(err);
-  });
+//Initialize gridfs
+let gridfs;
 
+conn.once('open',()=>{
+    gridfs = Grid(conn.db, mongoose.mongo)
+    gridfs.collection('users')
+})
+
+//Grid fs storage
+var storage = new GridFsStorage({
+  url: connectionString,
+  file: (req,file) => {    
+    if (file.mimetype === 'image/jpeg' ||         
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/png' || 
+        file.mimetype === 'img/png' ) {
+        return new Promise((resolve, reject) => {
+            crypto.randomBytes(16, (err, buf) => {
+              if (err) {
+                return reject(err);
+              }
+              const filename = buf.toString('hex') + path.extname(file.originalname);
+              const fileInfo = {
+                filename: filename,
+                bucketName: 'users'
+              };
+              resolve(fileInfo);
+            });
+          });
+    } 
+    else {
+        return json({
+            msg: 'The file uploaded was not an image',
+            success: false
+        })
+    }    
+  }
+});
+const upload = multer({ storage });
 
 //LOAD USERS COLLECTION
 async function loadUsersCollection(){
-    var db = mongoUtil.getDb()
+    var db = conn;
 
     //return the collection
     return db.collection('users');
@@ -130,6 +172,12 @@ router.post('/register',async (req,res) =>{
     })
 })
 
+//UPLOAD AVATAR
+router.post('/users/:id/profile-image',upload.single('profile-image'), (req,res) =>{
+    res.json({file: req.file})
+})
+
+
 //LOGIN 
 router.post('/login', async(req, res) =>{
     
@@ -152,7 +200,7 @@ router.post('/login', async(req, res) =>{
                     displayName: user.dname,
                     bio: user.bio
                 }
-                jwt.sign(payload, mongoUtil.secret, {expiresIn: "24h"}, (err,token) => {
+                jwt.sign(payload, 'thesecretwasinsideusallalong', {expiresIn: "24h"}, (err,token) => {
                     res.status(200).json({
                         success: true,
                         token: `Bearer ${token}`,

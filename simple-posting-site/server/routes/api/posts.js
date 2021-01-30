@@ -28,6 +28,15 @@ router.get('/', async (req, res) => {
     res.send(await posts.find({}).toArray());
 });
 
+router.get('/:id', async (req, res) => {  
+    //console.log(req.params.id)  
+    const posts = await loadPostCollection();
+    res.send(await posts.find({
+        "user._id": req.params.id
+    }).toArray());
+});
+
+
 //Search posts
 
 

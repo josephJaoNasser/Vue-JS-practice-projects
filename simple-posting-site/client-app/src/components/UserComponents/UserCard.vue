@@ -1,7 +1,7 @@
 <template>
    <div class="user-card-main-div">
-      <div class="user-info">
-         <div class="avatar">
+      <a href="/profile" class="user-info">
+         <div class="avatar" >
          <!-- avatar here -->
          </div>
          <div id="user-card-text" class="text-left ml-3">
@@ -11,7 +11,7 @@
                   <i>{{this.currentUser.username}}</i>
                </p>
          </div>   
-      </div>
+      </a>
       
       <button @click="logout">Logout</button>
    </div>

@@ -47,6 +47,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'PostList',
+    props: ['id'],
     components: {
       PostItem
     },
@@ -62,18 +63,9 @@ export default {
         monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         ],
-        
       }
       
-    },
-    async created(){              
-      this.loadPosts().then(() =>{  
-        setInterval( () => {
-            this.loadPosts(); 
-        }, 30000);
-      });
-              
-    },
+    },   
     methods: {
 
       ...mapActions(['loadPosts']),
@@ -88,6 +80,16 @@ export default {
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
       }
+    },
+     async created(){                    
+      this.loadPosts(this.id).then(() =>{
+        if(this.$route.name == 'Home'){
+          setInterval( () => {
+             this.loadPosts(this.id); 
+          }, 30000);
+        }  
+        
+      });   
     }
 }
 </script>

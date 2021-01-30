@@ -52,8 +52,12 @@
       />      
       <div v-if="(this.userErrors.field == 'email')">
          <p class="error">{{this.userErrors.msg}}</p>
-      </div>         
-      
+      </div>
+
+      <!-- Profile picture -->
+      <h5>Profile Picture</h5>
+      <AvatarUploader />
+
       <!-- Bio  -->
       <h5>Bio</h5>
       <textarea v-model="bio"></textarea><br>
@@ -66,8 +70,20 @@
 import { mapGetters } from 'vuex'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import LoadingComponent from '@/components/LoadingComponents/LoadingComponent.vue'
+import ErrorComponent from '@/components/ErrorComponents/ErrorComponent.vue'
+
+const AvatarUploader = () => ({
+  component: import(/* webpackChunkName: "avatar-uploader" */'@/components/UserComponents/AvatarUploader.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+});
 
 export default {
+   components:{
+      AvatarUploader
+   },
    data() {
       return{
          username: '',

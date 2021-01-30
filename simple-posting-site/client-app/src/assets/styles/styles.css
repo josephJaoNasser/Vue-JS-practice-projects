@@ -106,7 +106,7 @@ button.red{
 
 .input-error{
   transition: all 0.2s ease-in-out;
-  border: 3px solid  rgb(175, 0, 0)!important;
+  border: 3px dashed  rgb(175, 0, 0)!important;
 }
 
 /*=== TRANSITIONS ===*/
