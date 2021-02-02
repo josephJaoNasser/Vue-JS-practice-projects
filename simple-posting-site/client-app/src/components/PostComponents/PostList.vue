@@ -83,12 +83,9 @@ export default {
     },
      async created(){                    
       this.loadPosts(this.id).then(() =>{
-        if(this.$route.name == 'Home'){
-          setInterval( () => {
-             this.loadPosts(this.id); 
-          }, 30000);
-        }  
-        
+        setInterval( () => {
+            this.loadPosts(this.id); 
+        }, 30000);
       });   
     }
 }
