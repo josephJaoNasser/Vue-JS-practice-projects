@@ -1,5 +1,5 @@
 <template>
-    <div class="post-list">         
+    <div class="post-list">      
         <transition name="fade" >
           <div 
             class="loading-animation"
@@ -18,7 +18,7 @@
         
       </transition>
       <p class="error" v-if="this.errors">{{this.errors}}</p>
-      
+      <p v-if="!this.allPosts.length"><i>There are no posts to show...</i></p>
       
       <transition-group name="list-complete">
         <div class="post list-complete-item" 

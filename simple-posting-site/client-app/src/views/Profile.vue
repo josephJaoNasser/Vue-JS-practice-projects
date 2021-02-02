@@ -1,5 +1,12 @@
 <template>
    <div class="profile-main-container">
+      <button 
+         class="green" 
+         style="position:relative; left: -43%"
+         @click="$router.push('/')"
+      >
+         <i class="fas fa-arrow-left"></i>
+      </button>
       <div class="avatar large">
          <img :src="'./api/users/profile-images/'+this.currentUser._id+'/'+this.currentUser.profile_image" />
          <!-- avatar here -->
@@ -8,12 +15,30 @@
          <h2>{{this.currentUser.displayName}}</h2>
          <h4 style="opacity: 0.7">{{this.currentUser.username}}</h4>
       </div>
-
+      
       <hr>
       
       <h4 class="posts-header font-weight-bold text-left">Your posts</h4>
+      <transition name="fade">                  
+         <PostUpdateComponent 
+         v-on:update-modal-closed="updatePost = []" 
+         v-if="this.updatePost._id" 
+         v-bind:post="this.updatePost"/>      
+      </transition>
       
-     <PostList v-bind:id="this.currentUser._id"/> 
+
+      <transition name="fade">            
+         <ConfirmDeleteModal 
+         v-bind:post="this.deletePost"
+         v-if="this.deletePost._id" 
+         v-on:delete-modal-closed="deletePost = []" 
+         />    
+      </transition>
+     <PostList 
+         v-bind:id="this.currentUser._id"
+         v-on:updating-post="setUpdatePost"
+         v-on:deleting-post="setDeletePost"
+      /> 
    </div>
 </template>
 
@@ -30,12 +55,26 @@ const PostList = () => ({
 });
 
 export default {
+   data() {
+      return {
+         updatePost: [],
+         deletePost: [],
+      }
+   },
    components: {
-      PostList
+      PostList,
+      ConfirmDeleteModal: ()=> import(/* webpackChunkName: "confirm-delete-modal-component" */'@/components/PostComponents/ConfirmDeleteModal.vue'),
+    PostUpdateComponent: ()=> import(/* webpackChunkName: "post-update-component" */'@/components/PostComponents/PostUpdateComponent.vue'),
    },
    computed: mapGetters(['currentUser']),
    methods: {
-      
+      setUpdatePost(post){
+         this.updatePost = post
+      },
+
+      setDeletePost(post){
+         this.deletePost = post
+      }
    },
    created() {
       
