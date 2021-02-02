@@ -89,7 +89,7 @@ export default {
    margin: 2em auto;
 }
 
-.profile-main-container .avatar{
+.profile-main-container .avatar.large{
    margin: 0px auto;
 }
 
