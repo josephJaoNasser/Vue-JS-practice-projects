@@ -1,7 +1,8 @@
 <template>
   <div class="mobile-user-bar-main-div">
-        <a class="avatar" href="/profile">
+        <a class="avatar small" href="/profile">
             <!-- avatar here -->
+            <img :src="'./api/users/profile-images/'+this.currentUser._id+'/'+this.currentUser.profile_image" />
          </a>
           <button @click="logout" style="float:right">Logout</button>
      </div>
@@ -32,12 +33,12 @@ export default {
 } 
 
 .mobile-user-bar-main-div .avatar{
-   height: 50px;
-   min-width:50px;
-   background-color: aquamarine;
-   border-radius: 50%;
    float: left;
+   overflow: hidden;
 }
 
-
+.mobile-user-bar-main-div .avatar img{
+   max-width: 50px;
+   object-fit: cover;
+}
 </style>

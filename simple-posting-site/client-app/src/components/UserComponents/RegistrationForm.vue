@@ -56,7 +56,7 @@
 
       <!-- Profile picture -->
       <h5>Profile Picture</h5>
-      <AvatarUploader />
+      <AvatarUploader v-on:profile-image-updated="(file)=>{this.profileImage = file;}"/>
 
       <!-- Bio  -->
       <h5>Bio</h5>
@@ -91,33 +91,29 @@ export default {
          password: '',
          confirm_password: '',
          email: '',
+         profileImage: null,
          bio: '',
          errors: '',
       }
    },
    computed: mapGetters(['userLoadingStates', 'userErrors']),
    methods: {
-      registerUser(){
+      registerUser(){         
          let newUser = {
             username: this.username,
             displayName: this.displayName,
             password: this.password,
             confirm_password: this.confirm_password,
+            profileImage: this.profileImage,
             email: this.email,
             bio: this.bio,
          }
 
-         try{
-            
-            this.$store.dispatch('registerUser',newUser).then(res => {
-               if(res.data.success){
-                  this.$router.push('/registration-success')
-               }
-            })
-         }
-         catch(err){
-            console.log(err)
-         }      
+         this.$store.dispatch('registerUser',newUser).then(res => {
+            if(res.data.success){
+               this.$router.push('/registration-success')
+            }
+         }).catch((err)=> { console.log(err +'\n'+this.userErrors.field) }) 
       }
    },
 }

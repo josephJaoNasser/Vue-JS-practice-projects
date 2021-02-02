@@ -13,6 +13,28 @@
       transform: translate(-50%,-50%);
 }
 
+.avatar{
+  background-color: gray;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar.small{
+  height: 50px;
+  width:50px;
+}
+
+.avatar.large{
+  height: 170px;
+  width:170px;
+}
+
+.avatar img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
 /*=== TEXT COLOR ===*/
 .green-text{
       color: #42b983;

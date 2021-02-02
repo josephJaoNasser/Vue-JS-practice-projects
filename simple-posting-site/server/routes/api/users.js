@@ -69,9 +69,9 @@ module.exports = router;
 
 //REGISTER/CREATE USERS
 router.post('/register',async (req,res) =>{
-
+    
     const users = await loadUsersCollection();
-
+    console.log(req.body.profileImage)
     //check if user typed in a proper username
     if(req.body.username.length < 1){
         return res.status(400).json({
@@ -154,15 +154,16 @@ router.post('/register',async (req,res) =>{
     //hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
-
+    const newID = new mongodb.ObjectID()
     //insert to database
     await users.insertOne({
-        _id : new mongodb.ObjectID(),
+        _id : newID,
         uname: req.body.username,
         dname: req.body.displayName,
         pwd: hashedPassword ,
         email: req.body.email,
-        bio: req.body.bio,
+        profile_image: req.body.profileImage,
+        bio: req.body.bio, 
         joinedOn: new Date()
     });
 
@@ -173,9 +174,57 @@ router.post('/register',async (req,res) =>{
 })
 
 //UPLOAD AVATAR
-router.post('/users/:id/profile-image',upload.single('profile-image'), (req,res) =>{
-    res.json({file: req.file})
+router.post('/upload/profile-image',upload.single('profile-image'), (req,res) =>{
+    return res.status(201).json({
+        success: true,
+        msg: 'Profile image uploaded',
+        filename: req.file.filename
+    })
 })
+
+//GET ALL AVATARS
+// router.get('/profile-images', (req,res) => {
+//     gridfs.files.find().toArray((err,files)=> {
+//         //check if files
+//         if(!files || files.length === 0){
+//             return res.status(404).json({
+//                 msg: "There's nothing here...."
+//             })
+//         }
+//         return res.json(files)
+//     });
+// });
+
+//GET ONE AVATAR
+router.get('/profile-images/:id/:filename', async (req,res) => {
+    // const users = await loadUsersCollection();
+    // const user = await users.findOne({_id: req.params.id});
+    // console.log(user)
+    gridfs.files.findOne({filename: req.params.filename}, (err, file)=>{
+        //check if files
+        if(!file || file.length === 0){
+            return res.status(404).json({
+                msg: 'File does not exist'
+            })
+        }
+        if (file.contentType === 'image/jpeg' ||         
+            file.contentType === 'image/jpg' ||
+            file.contentType === 'image/png' || 
+            file.contentType === 'img/png' ) {
+
+            const readstream = gridfs.createReadStream(file.filename)
+            readstream.pipe(res)
+        }else{
+            res.status(404).json({
+                msg: 'The file is not an image'
+            })
+        }
+    })
+});
+
+
+
+
 
 
 //LOGIN 
@@ -198,6 +247,7 @@ router.post('/login', async(req, res) =>{
                     _id: user._id,
                     username: user.uname,
                     displayName: user.dname,
+                    profile_image:user.profile_image,
                     bio: user.bio
                 }
                 jwt.sign(payload, 'thesecretwasinsideusallalong', {expiresIn: "24h"}, (err,token) => {

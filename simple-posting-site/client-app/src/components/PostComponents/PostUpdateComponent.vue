@@ -5,11 +5,11 @@
                 <h1>Update Post</h1>           
                 <textarea type="text" id="create-post" v-model="newText"></textarea>
                 <div class="action-container">
-                    <button :disabled="loadingStates.updatingPost || !newText || (newText == this.post.text)" class="btn-update" @click="editPost">
-                        <i class="fa fa-spinner fa-spin" v-if="loadingStates.updatingPost"></i>
+                    <button :disabled="postLoadingStates.updatingPost || !newText || (newText == this.post.text)" class="btn-update" @click="editPost">
+                        <i class="fa fa-spinner fa-spin" v-if="postLoadingStates.updatingPost"></i>
                         {{btnUpdateText}}
                         </button>
-                    <button :disabled="loadingStates.updatingPost" class="btn-cancel" @click="$emit('update-modal-closed')">Cancel</button>
+                    <button :disabled="postLoadingStates.updatingPost" class="btn-cancel" @click="$emit('update-modal-closed')">Cancel</button>
                 </div>
            </div>
        </div>
@@ -23,7 +23,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
     props: ['post'],
-    computed: mapGetters(['loadingStates']),
+    computed: mapGetters(['postLoadingStates']),
     data(){
         return{
             newText: '',
@@ -40,8 +40,8 @@ export default {
             text: this.newText
           }
 
-          this.updatePost(updatedPost);          
-          this.$emit('update-modal-closed');
+          this.updatePost(updatedPost).then(()=>this.$emit('update-modal-closed'));          
+          
         }
     },
     created(){

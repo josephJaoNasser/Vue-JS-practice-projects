@@ -138,7 +138,7 @@ export default {
   color: black;
   background-color: white;
   padding: 10px;
-  margin: 1em;
+  margin: 1em 0;
   border-bottom: 1px solid #ddd;
   text-align: left;
   line-height: 1.4em;
@@ -148,7 +148,6 @@ export default {
 @media screen and (max-width: 600px){
   .post{
     padding: 0 1.2em;
-    margin: 1em 0;
   }
 }
 </style>

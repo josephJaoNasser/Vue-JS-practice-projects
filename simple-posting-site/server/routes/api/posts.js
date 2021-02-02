@@ -1,20 +1,23 @@
 const { text } = require('body-parser');
 const express = require('express');
+const multer = require('multer');
+const Grid = require('gridfs-stream');
+const crypto = require('crypto')
+const mongoose = require('mongoose');
+const GridFsStorage = require('multer-gridfs-storage');
+const path = require('path');
 const mongodb = require('mongodb');
 const router = express.Router();
 
 
 //DB CONNECTION (using external file)
-var mongoUtil = require( '../../mongoUtil' );
-
-mongoUtil.connectToServer( function( err, client ) {
-    if (err) console.log(err);
-  } );
-
+//Create mongo connection using mongoose
+const connectionString = 'mongodb+srv://jjnasser:yHyXGbJXLhR0PN0G@cluster0.yjzbg.mongodb.net/Cluster0?retryWrites=true&w=majority'
+const conn = mongoose.createConnection(connectionString)
 
 //Load collection
 async function loadPostCollection(){
-    var db = mongoUtil.getDb()
+    var db = conn
 
     //return the collection
     return db.collection('posts');

@@ -8,50 +8,40 @@
             name="profile-image" 
             @change="setImage" 
             accept="image/x-png  ,image/jpeg"
-            v-bind:class="{'input-error': this.error}" 
+            v-bind:class="{'input-error': (this.userErrors.field=='profileImage')}" 
          />
-         <div v-if="(this.error)" style="margin-top: 8px">
-            <p class="error">{{this.error}}</p>
+         <div v-if="(this.userErrors.field=='profileImage')" style="margin-top: 8px">
+            <p class="error">{{this.userErrors.msg}}</p>
          </div>
-         <button class="green" @click="uploadImage">Upload</button>    
       </div>  
           
    </div>
 </template>
 
 <script>
-export default {
+import { mapGetters } from 'vuex'
+export default {   
    data() {
       return {
-         url: null,
-         profileImage: null,
-         error: null
+         url: null
       }
    },
+   computed: mapGetters(['userErrors']),
    methods: {
-      uploadImage(){
-         if(this.profileImage){
-            this.error = null
-            const formData = new FormData()
-            formData.append('profile-image', this.profileImage)
-            this.$store.dispatch('uploadProfileImage',formData)
-         }
-         else{
-            this.error = 'Please upload jpeg/jpg or png file!'
-         }     
-      },
-      setImage(){  
+      setImage(){          
+         //console.log(this.$store.state.userErrors)
          const _validFileExtensions = ["jpg", "jpeg", "png"];    
          const file = this.$refs.imageupload.files[0];         
          if(file){  
             var ext =  file.name.split('.').pop();         
-            if(_validFileExtensions.includes(ext)){
-               this.error = null
-               this.url = URL.createObjectURL(file);
-               this.profileImage = file;
+            if(_validFileExtensions.includes(ext.toLowerCase())){
+               this.url = URL.createObjectURL(file);               
+               this.$emit('profile-image-updated',file)
             }
             else{
-               this.error = 'Please upload jpeg/jpg or png file!'
+               this.userErrors = {
+                  field: 'profileImage',
+               }
                this.$refs.imageupload.value=null
             }            
          }
@@ -96,7 +86,7 @@ export default {
    outline: none;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 620px) {
    .profile-image-preview{
       height: 150px;
       width: 150px;
@@ -105,9 +95,6 @@ export default {
    .profile-image-uploader{
       display: flex;
       flex-direction: column;
-      /* padding: 1em;
-      border: 2px dashed #ccc;
-      border-radius: 50px; */
    }
 }
 </style>

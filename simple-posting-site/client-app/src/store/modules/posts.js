@@ -10,7 +10,6 @@ const state = {
       sendingPost: false,
       updatingPost: false,
       deletingPost: false,
-      msg: ''
    }, 
   
 };
@@ -29,23 +28,22 @@ const actions = {
       const res = await axios.get(`${url}${id ? id: ''}`).catch((err)=>{    
          commit('fetching_post_err',err.message);
       });
-
       const posts = res.data.map(thePassedPost => ({
          ...thePassedPost,
          createdAt: new Date(thePassedPost.createdAt)                        
       }));
-      commit('posts_received',posts);
+      commit('fetching_post_success',posts);
       
    },
 
    //insert posts
    async createPost({ commit }, newPostObject){   
-      state.loadingStates.sendingPost = true
+      commit('post_send_request');
       const res = await axios.post(url, {
          text: newPostObject.text,
          user: newPostObject.user
-      }) 
-     commit('post_sent',res.data);
+      });
+     commit('post_send_success',res.data);
    },
 
    //delete posts
@@ -56,13 +54,18 @@ const actions = {
    },
 
    //update posts
-   async updatePost({commit},updatedPostObject){           
-      state.loadingStates.updatingPost = true
+   async updatePost({commit},updatedPostObject){  
+      commit('post_update_request')
+
       const res = await axios.put(`${url}${updatedPostObject.id}`, 
-      updatedPostObject
-      );
+         updatedPostObject
+      ).catch((err) => { commit('post_update_err', err) });
+
+      if(res)
+      {
+         commit('post_update_success',res.data)   
+      }     
       
-     commit('editPost',res.data)
    },
 
 };
@@ -71,9 +74,14 @@ const mutations = {
 
    fetching_post: (state) => state.loadingStates.fetchingPost = true,
 
-   posts_received: (state, posts) => {
+   fetching_post_success: (state, posts) => {
       state.posts = posts;
-      state.loadingStates.fetchingPost = false;
+      state.loadingStates =  {
+         fetchingPost: false,
+         sendingPost: false,
+         updatingPost: false,
+         deletingPost: false,
+      };
       state.postsError = '';
    },
 
@@ -81,8 +89,12 @@ const mutations = {
       state.loadingStates.fetchingPost = false;
       state.postsError = error
    },
+
+   post_send_request: (state) => {
+      state.loadingStates.sendingPost = true
+   },
    
-   post_sent: (state, post) => {      
+   post_send_success: (state, post) => {      
       post.createdAt = new Date(post.createdAt);
       state.posts.push(post);
       state.loadingStates.sendingPost = false;
@@ -93,7 +105,17 @@ const mutations = {
       state.loadingStates.deletingPost = false
    },
 
-   editPost: (state, update) => {      
+   post_update_request: (state) => {
+      state.loadingStates.updatingPost = true
+   },
+
+   post_update_err: (state, error) => {
+      console.log('update error')
+      state.loadingStates.updatingPost = false;
+      state.postsError = error
+   },
+
+   post_update_success: (state, update) => {      
       const index = state.posts.findIndex(post => post._id === update._id);
       update.createdAt = new Date(update.createdAt);
       update.updatedAt = new Date(update.updatedAt);

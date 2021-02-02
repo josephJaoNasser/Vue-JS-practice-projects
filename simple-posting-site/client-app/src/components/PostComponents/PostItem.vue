@@ -30,22 +30,28 @@
       </div>
       
     </b-dropdown>
-  
-    <p class="post-author">
-      <strong>{{truncate(this.post.user.displayName, 16)}}</strong>
-    </p>
-    <p class="post-text">
-      {{this.post.text}}
-    </p>
+    <a class="post-avatar avatar small" href="/profile">
+      <!-- avatar here -->
+      <img :src="'./api/users/profile-images/'+this.post.user._id+'/'+this.post.user.profile_image" />
+    </a>
+    <div class="post-body">
+      <p class="post-author">
+        <strong>{{truncate(this.post.user.displayName, 16)}}</strong>
+      </p>
+      <p class="post-text">
+        {{this.post.text}}
+      </p>
 
-    <p class="post-date">
-      <small v-if="!this.post.updatedAt">
-        <i>Posted {{getDateAndTime(this.post.createdAt)}}</i>
-      </small>
-      <small v-if="this.post.updatedAt">
-        <i>Updated {{`${getDateAndTime(new Date(this.post.updatedAt))}`}}</i>
-      </small>
-    </p>        
+      <p class="post-date">
+        <small v-if="!this.post.updatedAt">
+          <i>Posted {{getDateAndTime(this.post.createdAt)}}</i>
+        </small>
+        <small v-if="this.post.updatedAt">
+          <i>Updated {{`${getDateAndTime(new Date(this.post.updatedAt))}`}}</i>
+        </small>
+      </p>        
+    </div>
+    
   </div>
 </template>
 
@@ -84,3 +90,15 @@ export default {
   }
 }
 </script>
+
+<style>
+.post-avatar{
+  float: left;
+  overflow: hidden;
+}
+
+.post-body{
+  display: inline-block;
+  margin-left: 15px;
+}
+</style>

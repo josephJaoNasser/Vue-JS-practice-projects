@@ -7,12 +7,11 @@ const state = {
       registeringUser: false,
       loggingIn: false,
       uploadingImage: false,
-      msg: ''
    }, 
    token: localStorage.getItem('token') || '',
    user: {},
    status: '',
-   UserErrors: {}
+   userErrors: {}
 }
 
 const getters = {
@@ -20,15 +19,29 @@ const getters = {
    isLoggedIn: (state) => !!state.token,
    authState: (state) => state.status,
    currentUser: (state) => state.user,
-   userErrors: (state) => state.UserErrors,
+   userErrors: (state) => state.userErrors,
 }
 
 const actions = {
 
    //register user
    async registerUser({ commit }, newUser){
-      commit('registration_request');
+      commit('registration_request');      
 
+      commit('upload_profile_img_request')
+      if(!newUser.profileImage){
+         commit('upload_profile_img_failed',{msg: 'Please upload a .jpg or .png file'})
+         return 
+      }
+
+      const formData = new FormData()
+      formData.append('profile-image', newUser.profileImage)
+
+      const uploaded = await axios.post(url+'upload/profile-image',formData).catch((err)=> {
+         commit('upload_profile_img_failed',err)
+      })
+      console.log(uploaded.data.filename)
+      newUser.profileImage = uploaded.data.filename
       const res = await axios.post(url+'register', newUser).catch((err) => {
          commit('registration_err',err.response.data);
       });
@@ -36,19 +49,10 @@ const actions = {
       if(res.data.success){
          commit('registration_success')
       }
-
+      
       return res;
    },
-
-   //upload profile image
-   async uploadProfileImage({ commit },profileImage){      
-      commit('upload_profile_img_request')
-      const res = await axios.post(url+'/users/'+ state.user._id +'/profile-image',profileImage).catch((err)=> {
-         console.log(err)
-      })
-      console.log(res);
-      return res
-   },
+  
 
    //login
    async login({ commit }, user){      
@@ -57,12 +61,12 @@ const actions = {
          commit('login_failed',err.response.data);
       })
 
-      if(res.data.success){
+      if(res.data.success){   
          //store the token into local storage
          localStorage.setItem('token', res.data.token);
          //set the axios default headers
          axios.defaults.headers.common['Authorization'] = res.data.token;
-         
+         console.log(res)
          commit('login_success',res);           
       }
       return res;
@@ -90,7 +94,7 @@ const mutations = {
    registration_success: (state) => state.loadingStates.registeringUser = false,
 
    registration_err: (state, err) => {
-      state.UserErrors = {
+      state.userErrors = {
          error_type: 'Registration error', 
          field: err.field,
          msg: err.msg
@@ -101,15 +105,21 @@ const mutations = {
    upload_profile_img_request: (state) => state.loadingStates.uploadingImage = true,
 
    upload_profile_img_failed: (state,err) => {
-      state.UserErrors = {
-         error_type: 'Profile Image error', 
+      state.userErrors = {
+         field: 'profileImage', 
          msg: err.msg
       }
+      state.loadingStates.uploadingImage = false
+      state.loadingStates.registeringUser = false
+   },
+
+   upload_profile_img_success: (state) => {
+      state.userErrors = {}
       state.loadingStates.uploadingImage = false
    },
 
    login_failed: (state, err) => {
-      state.UserErrors = {
+      state.userErrors = {
          error_type: 'Login error', 
          msg: err.msg
       }
@@ -136,7 +146,7 @@ const mutations = {
          msg: ''
       };
 
-      state.UserErrors = {}
+      state.userErrors = {}
    }
 }
 

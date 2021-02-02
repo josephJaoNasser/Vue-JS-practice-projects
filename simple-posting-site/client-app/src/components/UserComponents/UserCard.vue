@@ -1,8 +1,9 @@
 <template>
    <div class="user-card-main-div">
       <a href="/profile" class="user-info">
-         <div class="avatar" >
+         <div class="avatar small" >
          <!-- avatar here -->
+            <img :src="'./api/users/profile-images/'+this.currentUser._id+'/'+this.currentUser.profile_image" />
          </div>
          <div id="user-card-text" class="text-left ml-3">
                
@@ -75,13 +76,14 @@ export default {
    }
 
    .user-card-main-div .avatar{
-      height: 50px;
-      min-width:50px;
-      background-color: aquamarine;
-      border-radius: 50%;
       float: left;
+      overflow: hidden;
    }
 
+   .user-card-main-div .avatar img{
+      max-width: 50px;
+      object-fit: cover;
+   }
   
 
    @media screen and (max-width: 1280px){
