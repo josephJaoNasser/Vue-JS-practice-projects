@@ -197,29 +197,50 @@ router.post('/upload/profile-image',upload.single('profile-image'), (req,res) =>
 
 //GET ONE AVATAR
 router.get('/profile-images/:id/:filename', async (req,res) => {
-    // const users = await loadUsersCollection();
-    // const user = await users.findOne({_id: req.params.id});
-    // console.log(user)
-    gridfs.files.findOne({filename: req.params.filename}, (err, file)=>{
-        //check if files
-        if(!file || file.length === 0){
-            return res.status(404).json({
-                msg: 'File does not exist'
-            })
-        }
-        if (file.contentType === 'image/jpeg' ||         
-            file.contentType === 'image/jpg' ||
-            file.contentType === 'image/png' || 
-            file.contentType === 'img/png' ) {
-
-            const readstream = gridfs.createReadStream(file.filename)
-            readstream.pipe(res)
-        }else{
-            res.status(404).json({
-                msg: 'The file is not an image'
-            })
-        }
-    })
+    const users = await loadUsersCollection();
+    let user;    
+    try{
+        user = await users.findOne(
+            {
+                _id: new mongodb.ObjectID(req.params.id) , 
+                profile_image: req.params.filename
+            }
+        )
+    }
+    catch(err){
+        return res.status(400).json({
+            msg: err
+        })
+    }   
+    
+    if(user){
+        gridfs.files.findOne({filename: req.params.filename}, (err, file)=>{
+            //check if files
+            if(!file || file.length === 0){
+                return res.status(404).json({
+                    msg: 'File does not exist'
+                })
+            }
+            if (file.contentType === 'image/jpeg' ||         
+                file.contentType === 'image/jpg' ||
+                file.contentType === 'image/png' || 
+                file.contentType === 'img/png' ) {
+    
+                const readstream = gridfs.createReadStream(file.filename)
+                readstream.pipe(res)
+            }else{
+                return res.status(404).json({
+                    msg: 'The file is not an image'
+                })
+            }
+        })
+    }
+    else{
+        return res.status(404).json({
+            msg: 'File not found'
+        })
+    }
+    
 });
 
 

@@ -64,7 +64,7 @@ export default {
    components: {
       PostList,
       ConfirmDeleteModal: ()=> import(/* webpackChunkName: "confirm-delete-modal-component" */'@/components/PostComponents/ConfirmDeleteModal.vue'),
-    PostUpdateComponent: ()=> import(/* webpackChunkName: "post-update-component" */'@/components/PostComponents/PostUpdateComponent.vue'),
+      PostUpdateComponent: ()=> import(/* webpackChunkName: "post-update-component" */'@/components/PostComponents/PostUpdateComponent.vue'),
    },
    computed: mapGetters(['currentUser']),
    methods: {
@@ -75,10 +75,7 @@ export default {
       setDeletePost(post){
          this.deletePost = post
       }
-   },
-   created() {
-      
-   },
+   }
    
 }
 </script>

@@ -72,7 +72,10 @@ const actions = {
 
 const mutations = {
 
-   fetching_post: (state) => state.loadingStates.fetchingPost = true,
+   fetching_post: (state) => {
+      console.log(state.posts)
+      state.loadingStates.fetchingPost = true
+   },
 
    fetching_post_success: (state, posts) => {
       state.posts = posts;

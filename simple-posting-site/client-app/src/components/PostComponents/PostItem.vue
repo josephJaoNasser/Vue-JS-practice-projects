@@ -7,7 +7,7 @@
     </a>
     <div class="post-body">
       <p class="post-author">
-        <strong>{{truncate(this.post.user.displayName, 16)}}</strong>
+        <strong>{{truncate(this.post.user.displayName, 18)}}</strong>
       </p>
       <p class="post-text">
         {{this.post.text}}
