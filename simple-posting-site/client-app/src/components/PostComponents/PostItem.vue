@@ -5,14 +5,10 @@
       <!-- avatar here -->
       <img :src="'./api/users/profile-images/'+this.post.user._id+'/'+this.post.user.profile_image" />
     </a>
-    <div class="post-body">
-      <p class="post-author">
+    <div class="post-body mb-3">
+      <p class="post-author mb-0">
         <strong>{{truncate(this.post.user.displayName, 18)}}</strong>
       </p>
-      <p class="post-text">
-        {{this.post.text}}
-      </p>
-
       <p class="post-date">
         <small v-if="!this.post.updatedAt">
           <i>Posted {{getDateAndTime(this.post.createdAt)}}</i>
@@ -20,7 +16,21 @@
         <small v-if="this.post.updatedAt">
           <i>Updated {{`${getDateAndTime(new Date(this.post.updatedAt))}`}}</i>
         </small>
-      </p>        
+      </p>    
+      <p class="post-text" v-if="this.post.text.length">
+        {{this.post.text}}
+      </p>
+      <div class="post-media-container" v-if="this.post.media">
+        <div 
+          class="post-media-preview"
+          v-for="(item, index) in this.post.media"
+          v-bind:item="item"
+          v-bind:index="index"
+          v-bind:key="index"
+        >
+          <img :src="'./api/posts/post-media/'+item">
+        </div>
+      </div>  
     </div>
     <b-dropdown id="dropdown-right" right no-caret variant="light" class="m-2 float-right">
       <template #button-content>
@@ -92,6 +102,27 @@ export default {
 </script>
 
 <style>
+.post-media-container{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  overflow: hidden;
+  
+}
+.post-media-preview{
+  max-height: 200px; 
+  grid-column-end: auto;
+}
+
+.post-media-preview img{
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  object-fit: cover;
+  background-color: #ddd;
+}
+
 .post-item-main-container{
   display: flex;
 }
@@ -107,7 +138,7 @@ export default {
 }
 
 .post-body{
-  margin-left: 15px;
+  margin-left: 10px;
   flex-shrink: 17;
   flex-grow: 1;
 }

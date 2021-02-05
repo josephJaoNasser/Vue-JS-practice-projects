@@ -23,9 +23,9 @@ const getters = {
 const actions = {
 
    //load posts
-   async loadPosts({ commit },id){
+   async loadPosts({ commit },uname){
       commit('fetching_post');
-      const res = await axios.get(`${url}${id ? id: ''}`).catch((err)=>{    
+      const res = await axios.get(`${url}${uname ? uname: ''}`).catch((err)=>{    
          commit('fetching_post_err',err.message);
       });
       const posts = res.data.map(thePassedPost => ({
@@ -39,9 +39,26 @@ const actions = {
    //insert posts
    async createPost({ commit }, newPostObject){   
       commit('post_send_request');
+
+      const formData = new FormData()
+      if(newPostObject.media){
+         newPostObject.media.forEach(item => {
+            formData.append('post-media', item)
+         });
+      }
+      const uploaded = await axios.post(url+'upload/post-media',formData).catch((err)=> {
+         commit('post_send_failed',err);
+      })
+
+      let postMedia = [];
+
+      uploaded.data.files.forEach(item => {
+         postMedia.push(item.filename)
+      });
       const res = await axios.post(url, {
          text: newPostObject.text,
-         user: newPostObject.user
+         user: newPostObject.user,
+         media: postMedia
       });
      commit('post_send_success',res.data);
    },
@@ -73,7 +90,6 @@ const actions = {
 const mutations = {
 
    fetching_post: (state) => {
-      console.log(state.posts)
       state.loadingStates.fetchingPost = true
    },
 
@@ -103,6 +119,11 @@ const mutations = {
       state.loadingStates.sendingPost = false;
    },
    
+   post_send_failed: (state, err) => {
+      state.loadingStates.sendingPost = false;
+      console.log(err)
+   },
+
    removePost: (state, id) => {
       state.posts = state.posts.filter(post => post._id !== id);
       state.loadingStates.deletingPost = false

@@ -14,8 +14,9 @@
       <div class="p-3">
          <h2>{{this.currentUser.displayName}}</h2>
          <h4 style="opacity: 0.7">{{this.currentUser.username}}</h4>
+         
       </div>
-      
+      <p style="opacity: 0.7">{{this.currentUser.bio}}</p>
       <hr>
       
       <h4 class="posts-header font-weight-bold text-left">Your posts</h4>
@@ -35,7 +36,7 @@
          />    
       </transition>
      <PostList 
-         v-bind:id="this.currentUser._id"
+         v-bind:id="this.currentUser.username"
          v-on:updating-post="setUpdatePost"
          v-on:deleting-post="setDeletePost"
       /> 

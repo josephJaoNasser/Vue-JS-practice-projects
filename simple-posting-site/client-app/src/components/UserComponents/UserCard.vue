@@ -14,7 +14,7 @@
          </div>   
       </a>
       
-      <button @click="logout">Logout</button>
+      <button @click="logout" style="margin: 10px auto">Logout</button>
    </div>
 </template>
 
@@ -60,7 +60,7 @@ export default {
 <style>
    .user-card-main-div{
       width: 20%;
-      padding: 1.2em ;
+      padding: 8px ;
       border-radius: 20px;
       background-color: white;
       top:30px;
@@ -73,6 +73,15 @@ export default {
    .user-card-main-div .user-info{
       display: flex;
       justify-content: flex-start;
+      align-items: center;
+      color: #303030;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 20px;
+   }
+
+   .user-card-main-div .user-info:hover{      
+      background-color: #eee;
    }
 
    .user-card-main-div .avatar{

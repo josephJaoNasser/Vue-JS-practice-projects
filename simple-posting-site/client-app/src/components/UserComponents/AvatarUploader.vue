@@ -44,11 +44,11 @@ export default {
                }
                this.$refs.imageupload.value=null
             }            
-         }
+         }         
          else{
-            this.url = null
+            this.url = []
          }
-         
+         console.log(this.url)
       }
    },
 }
