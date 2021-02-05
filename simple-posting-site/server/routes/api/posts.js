@@ -31,6 +31,7 @@ var storage = new GridFsStorage({
         file.mimetype === 'image/jpg' ||
         file.mimetype === 'image/png' || 
         file.mimetype === 'img/png' ||
+        file.mimetype === 'image/webp' ||
         file.mimetype === 'image/gif' ||
         file.mimetype === 'video/mp4' ||
         file.mimetype === 'video/quicktime' ||
@@ -58,7 +59,6 @@ var storage = new GridFsStorage({
   }
 });
 const upload = multer({ storage });
-
 
 //Load collection
 async function loadPostCollection(){
@@ -96,7 +96,9 @@ router.get('/post-media/:filename',async(req, res) => {
         if (file.contentType === 'image/jpeg' ||         
             file.contentType === 'image/jpg' ||
             file.contentType === 'image/png' || 
-            file.contentType === 'img/png' ) {
+            file.contentType === 'img/png' ||
+            file.contentType === 'image/webp' ||
+            file.contentType === 'image/gif') {
 
             const readstream = gridfs.createReadStream(file.filename)
             readstream.pipe(res)

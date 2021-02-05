@@ -26,20 +26,22 @@
       </p>
       
       <div 
-        class="post-media-container" 
+        class="post-media-container"
+        ref="media" 
         v-if="this.post.media"
         v-bind:class="{
+          'single-image':(this.post.media.length == 1),
           'image-grid':(this.post.media.length > 1),
-          'odd-images':(this.post.media.length == 3)
+          'odd-images':(this.post.media.length == 3),
+          'portrait-img-preview' : this.isPortraitPreview
           }"
         >
         <div 
-          class="post-media-preview"
+          class="post-media-preview"          
           v-for="(item, index) in this.post.media"
           v-bind:item="item"
           v-bind:index="index"
-          v-bind:key="index"
-          
+          v-bind:key="index"   
         >
           <img :src="'./api/posts/post-media/'+item">
         </div>
@@ -89,7 +91,8 @@ export default {
   props: ['post'],
   data(){
     return {
-      currentUserId: this.$store.getters.currentUser._id  
+      currentUserId: this.$store.getters.currentUser._id ,
+      isPortraitPreview: false
     }
   },
   methods: {
@@ -126,6 +129,10 @@ export default {
   gap: 5px;
 }
 
+.single-image > .post-media-preview{
+  max-height: 400px;
+}
+
 .odd-images > .post-media-preview:nth-child(3){
   grid-row: 1 / span 3;
   grid-column: 2;
@@ -137,9 +144,9 @@ export default {
   border: 1px solid #ddd;
 }
 
-.post-media-preview img{
-  height: 100%;
+.post-media-preview img{  
   width: 100%;  
+  height: 100%;
   object-fit: cover;
   background-color: #ddd;
 }
@@ -166,6 +173,13 @@ export default {
 
 .post-date, .post-text{
   margin-bottom: 5px;
+}
+
+@media screen and (max-width: 600px){
+  .single-image > .post-media-preview{
+    max-height: 100%;
+  }
+
 }
 
 </style>

@@ -24,7 +24,7 @@
             id="media-input" 
             ref="mediaupload" 
             @change="setImage" 
-            accept="image/gif,image/jpeg,image/png,video/mp4,video/quicktime,video/webm"
+            accept="image/gif,image/jpeg,image/webp,image/png,video/mp4,video/quicktime,video/webm"
             multiple
           >
         </label>
@@ -64,7 +64,7 @@ export default {
     },
     
     setImage(){          
-      const _validFileExtensions = ["gif","jpg", "jpeg", "png","mp4","mov"];    
+      const _validFileExtensions = ["gif","jpg", "webp", "jpeg", "png","mp4","mov"];    
       const file = this.$refs.mediaupload.files;  
       if((file.length + this.url.length) <= 4){
         file.forEach((item) => {
@@ -73,9 +73,7 @@ export default {
             this.url.push(URL.createObjectURL(item));                   
           }
           else{
-            this.userErrors = {
-                field: '',
-            }
+            this.errorMsg = 'The file you uploaded is not supported...'
             this.$refs.mediaupload.value=null
           }     
         });
