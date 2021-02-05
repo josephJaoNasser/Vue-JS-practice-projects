@@ -5,10 +5,13 @@
       <!-- avatar here -->
       <img :src="'./api/users/profile-images/'+this.post.user._id+'/'+this.post.user.profile_image" />
     </a>
+
     <div class="post-body mb-3">
+
       <p class="post-author mb-0">
         <strong>{{truncate(this.post.user.displayName, 18)}}</strong>
       </p>
+
       <p class="post-date">
         <small v-if="!this.post.updatedAt">
           <i>Posted {{getDateAndTime(this.post.createdAt)}}</i>
@@ -16,22 +19,33 @@
         <small v-if="this.post.updatedAt">
           <i>Updated {{`${getDateAndTime(new Date(this.post.updatedAt))}`}}</i>
         </small>
-      </p>    
+      </p>
+
       <p class="post-text" v-if="this.post.text.length">
         {{this.post.text}}
       </p>
-      <div class="post-media-container" v-if="this.post.media">
+      
+      <div 
+        class="post-media-container" 
+        v-if="this.post.media"
+        v-bind:class="{
+          'image-grid':(this.post.media.length > 1),
+          'odd-images':(this.post.media.length == 3)
+          }"
+        >
         <div 
           class="post-media-preview"
           v-for="(item, index) in this.post.media"
           v-bind:item="item"
           v-bind:index="index"
           v-bind:key="index"
+          
         >
           <img :src="'./api/posts/post-media/'+item">
         </div>
       </div>  
     </div>
+
     <b-dropdown id="dropdown-right" right no-caret variant="light" class="m-2 float-right">
       <template #button-content>
         <i class="fa fa-ellipsis-v"></i>       
@@ -102,23 +116,30 @@ export default {
 </script>
 
 <style>
-.post-media-container{
+.post-media-container{    
+  overflow: hidden;  
+}
+
+.image-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 5px;
-  overflow: hidden;
-  
 }
+
+.odd-images > .post-media-preview:nth-child(3){
+  grid-row: 1 / span 3;
+  grid-column: 2;
+}
+
 .post-media-preview{
-  max-height: 200px; 
-  grid-column-end: auto;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #ddd;
 }
 
 .post-media-preview img{
   height: 100%;
-  width: 100%;
-  border-radius: 20px;
-  border: 1px solid #ddd;
+  width: 100%;  
   object-fit: cover;
   background-color: #ddd;
 }
@@ -142,4 +163,9 @@ export default {
   flex-shrink: 17;
   flex-grow: 1;
 }
+
+.post-date, .post-text{
+  margin-bottom: 5px;
+}
+
 </style>
