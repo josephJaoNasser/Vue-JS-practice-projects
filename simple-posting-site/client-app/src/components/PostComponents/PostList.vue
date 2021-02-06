@@ -1,25 +1,23 @@
 <template>
     <div class="post-list">      
-        <transition name="fade" >
-          <div 
-            class="loading-animation"
-            v-if="this.loadingStates.fetchingPost || this.loadingStates.sendingPost ||
-            this.loadingStates.updatingPost || this.loadingStates.deletingPost
-            && !this.errors" 
-          >
-            <div class="hollow-dots-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div> 
-          </div>   
-        </transition>  
-      <transition name="fade">
-        
-      </transition>
+      <transition name="fade" >
+        <div 
+          class="loading-animation"
+          v-if="this.loadingStates.fetchingPost || this.loadingStates.sendingPost ||
+          this.loadingStates.updatingPost || this.loadingStates.deletingPost
+          && !this.errors" 
+        >
+          <div class="hollow-dots-spinner">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+          </div> 
+        </div>   
+      </transition>  
+      
       <p class="error" v-if="this.errors">{{this.errors}}</p>
       <p v-if="!this.allPosts.length"><i>There are no posts to show...</i></p>
-      
+    
       <transition-group name="list-complete">
         <div class="post list-complete-item" 
           v-for="(post,index) in allPosts.slice().reverse()"
@@ -37,7 +35,7 @@
 
         </div>      
       </transition-group>
-     
+    
     </div>
 </template>
 

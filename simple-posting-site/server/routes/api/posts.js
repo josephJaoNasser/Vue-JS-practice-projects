@@ -158,26 +158,29 @@ router.delete('/:id', async (req, res) =>{
         _id: new mongodb.ObjectID(req.params.id)
     })
 
-    post.media.forEach(item => {
-        gridfs.files.findOne({filename: item},(err,file) => {
-            if(err){
-                return res.status(400).json({msg: err})
-            }
-            if(file){
-                gridfs.remove({
-                    _id: file._id,
-                    root: 'posts'
-                }, (err) => {
-                    if(err){
-                        return res.status(404).json({
-                            msg: err
-                        })
-                    }
-                })
-            }               
-        })
-        
-    });  
+    if(post.media || post.media.length > 0){
+        post.media.forEach(item => {
+            gridfs.files.findOne({filename: item},(err,file) => {
+                if(err){
+                    return res.status(400).json({msg: err})
+                }
+                if(file){
+                    gridfs.remove({
+                        _id: file._id,
+                        root: 'posts'
+                    }, (err) => {
+                        if(err){
+                            res.status(404).json({
+                                msg: 'The file is not found. Perhaps this file has been already deleted'
+                            })
+                        }
+                    })
+                }               
+            })
+            
+        });  
+    }   
+    
     
     await posts.deleteOne({
         _id: new mongodb.ObjectID(req.params.id)

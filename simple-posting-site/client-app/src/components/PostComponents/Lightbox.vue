@@ -1,10 +1,22 @@
 <template>
   <div class="lightbox-main-container" >
+    <transition name="fade" >
+      <div 
+        class="loading-animation absolute-center"
+        v-if="!this.isLoaded" 
+      >
+        <div class="hollow-dots-spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div> 
+      </div>   
+    </transition>
     <i class="fa fa-times lightbox-nav" @click="$emit('lightbox-closed')"></i>
     <img 
       class="absolute-center" 
       :src="'./api/posts/post-media/'+this.url"
-      style="width:80%"
+      @load="isLoaded = true"
     >
     <i class="fas fa-arrow-left lightbox-nav-arrows" @click="$emit('lightbox-prev')"></i>
     <i class="fas fa-arrow-right lightbox-nav-arrows" @click="$emit('lightbox-next')"></i>   
@@ -15,6 +27,11 @@
 export default {
   name: 'lightbox',
   props: ['url'],
+  data() {
+    return {
+      isLoaded: false
+    }
+  },
 }
 </script>
 
@@ -26,8 +43,13 @@ export default {
   top: 0;
   position: fixed;
   z-index: 99999;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
 }
+
+.lightbox-main-container img{
+    max-width: 80%;
+    max-height: 100%;
+  }
 
 .lightbox-nav,
 .lightbox-nav-arrows{
@@ -39,6 +61,7 @@ export default {
   cursor: pointer;
   z-index: 999999;
 }
+
 
 .lightbox-nav-arrows.fa-arrow-right{
   right: 20px;
@@ -55,7 +78,8 @@ export default {
 
 @media screen and (max-width: 600px) {
   .lightbox-main-container img{
-    width: 100%!important;
+    width: 80%;
+    height: auto;
   }
   .lightbox-nav-arrows{
     bottom: 0;
