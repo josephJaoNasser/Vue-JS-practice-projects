@@ -182,19 +182,6 @@ router.post('/upload/profile-image',upload.single('profile-image'), (req,res) =>
     })
 })
 
-//GET ALL AVATARS
-// router.get('/profile-images', (req,res) => {
-//     gridfs.files.find().toArray((err,files)=> {
-//         //check if files
-//         if(!files || files.length === 0){
-//             return res.status(404).json({
-//                 msg: "There's nothing here...."
-//             })
-//         }
-//         return res.json(files)
-//     });
-// });
-
 //GET ONE AVATAR
 router.get('/profile-images/:id/:filename', async (req,res) => {
     const users = await loadUsersCollection();

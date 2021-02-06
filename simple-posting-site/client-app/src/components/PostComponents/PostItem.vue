@@ -1,6 +1,14 @@
 <template>
   <div class="post-item-main-container">
-    
+    <transition name="fade">
+      <Lightbox 
+        v-bind:url="this.post.media[mediaIndex]"
+        v-if="this.mediaIndex > -1"
+        v-on:lightbox-closed="mediaIndex = -1"
+        v-on:lightbox-prev="()=>{if(mediaIndex>0){mediaIndex--}}"
+        v-on:lightbox-next="()=>{if(mediaIndex < this.post.media.length-1){mediaIndex++}}"
+      />
+    </transition>
     <a class="post-avatar avatar small" href="/profile">
       <!-- avatar here -->
       <img :src="'./api/users/profile-images/'+this.post.user._id+'/'+this.post.user.profile_image" />
@@ -43,7 +51,10 @@
           v-bind:index="index"
           v-bind:key="index"   
         >
-          <img :src="'./api/posts/post-media/'+item">
+          <img 
+            :src="'./api/posts/post-media/'+item"
+            @click="mediaIndex = index"
+          >          
         </div>
       </div>  
     </div>
@@ -85,14 +96,27 @@
 import moment from 'moment/src/moment'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import LoadingComponent from '@/components/LoadingComponents/LoadingComponent.vue'
+import ErrorComponent from '@/components/ErrorComponents/ErrorComponent.vue'
+
+const Lightbox = () => ({
+  component: import(/* webpackChunkName: "lightbox-component" */'@/components/PostComponents/Lightbox.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+});
 
 export default {
   name: 'PostItem',
   props: ['post'],
+  components: {
+    Lightbox
+  },
   data(){
     return {
       currentUserId: this.$store.getters.currentUser._id ,
-      isPortraitPreview: false
+      isPortraitPreview: false,
+      mediaIndex: -1
     }
   },
   methods: {
@@ -126,7 +150,7 @@ export default {
 .image-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
+  gap: 2px;
 }
 
 .single-image > .post-media-preview{
@@ -139,7 +163,7 @@ export default {
 }
 
 .post-media-preview{
-  border-radius: 20px;
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid #ddd;
 }
@@ -149,6 +173,7 @@ export default {
   height: 100%;
   object-fit: cover;
   background-color: #ddd;
+  cursor: pointer;
 }
 
 .post-item-main-container{

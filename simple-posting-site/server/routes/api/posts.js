@@ -153,12 +153,35 @@ router.put('/:id', async (req, res) =>{
 
 //Delete posts
 router.delete('/:id', async (req, res) =>{
-    const posts = await loadPostCollection();
+    const posts = await loadPostCollection();       
+    const post = await posts.findOne({
+        _id: new mongodb.ObjectID(req.params.id)
+    })
+
+    post.media.forEach(item => {
+        gridfs.files.findOne({filename: item},(err,file) => {
+            if(err){
+                return res.status(400).json({msg: err})
+            }
+            if(file){
+                gridfs.remove({
+                    _id: file._id,
+                    root: 'posts'
+                }, (err) => {
+                    if(err){
+                        return res.status(404).json({
+                            msg: err
+                        })
+                    }
+                })
+            }               
+        })
+        
+    });  
+    
     await posts.deleteOne({
         _id: new mongodb.ObjectID(req.params.id)
-    });    
+    }); 
 
     res.status(201).send();
 })
-
-
