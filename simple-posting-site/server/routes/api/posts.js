@@ -158,7 +158,7 @@ router.delete('/:id', async (req, res) =>{
         _id: new mongodb.ObjectID(req.params.id)
     })
 
-    if(post.media || post.media.length > 0){
+    if(post.media){
         post.media.forEach(item => {
             gridfs.files.findOne({filename: item},(err,file) => {
                 if(err){
