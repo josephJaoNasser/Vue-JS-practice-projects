@@ -39,6 +39,11 @@ const actions = {
    //insert posts
    async createPost({ commit }, newPostObject){   
       commit('post_send_request');
+      
+      const postContent= {
+         text: newPostObject.text,
+         user: newPostObject.user
+      }
 
       const formData = new FormData()
       if(newPostObject.media){
@@ -46,21 +51,14 @@ const actions = {
             formData.append('post-media', item)
          });
       }
-      const uploaded = await axios.post(url+'upload/post-media',formData).catch((err)=> {
+      formData.append('postContent' , JSON.stringify(postContent))
+
+      const res = await axios.post(url,formData).catch((err)=> {
          commit('post_send_failed',err);
       })
+      console.log(res.data)
 
-      let postMedia = [];
-
-      uploaded.data.files.forEach(item => {
-         postMedia.push(item.filename)
-      });
-      const res = await axios.post(url, {
-         text: newPostObject.text,
-         user: newPostObject.user,
-         media: postMedia
-      });
-     commit('post_send_success',res.data);
+     commit('post_send_success',res.data.post);
    },
 
    //delete posts

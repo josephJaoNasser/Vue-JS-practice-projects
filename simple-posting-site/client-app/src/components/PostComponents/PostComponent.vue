@@ -109,15 +109,15 @@ export default {
 
 .image-attatchments-preview > i{
     color: white;
-    position: absolute;
+    float: left;
     background-color: #303030;
     padding: 5px;
     border-radius: 50%;
     height: 25px;
     width: 25px;
     opacity: 1;
-    margin: -10px;
     cursor: pointer;
+    position: absolute;
 }
 
 .post-actions{
@@ -143,10 +143,24 @@ export default {
 	position: absolute;
 	z-index: -1;
 }
-
 @media screen and (max-width: 600px){
- .post-component-main{
+  .post-component-main{
    padding: 0 10px;
+ }
+}
+
+@media screen and (max-width: 560px){ 
+
+  .post-attatchments-preview{
+    overflow-x: scroll;
+  }
+
+ .post-attatchments-preview img{
+   margin: -1em 12px 12px 0;
+ }
+
+ .image-attatchments-preview > i{
+   position: relative;
  }
 }
 </style>

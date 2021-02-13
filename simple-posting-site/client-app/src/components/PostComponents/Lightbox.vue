@@ -18,20 +18,29 @@
       :src="'./api/posts/post-media/'+this.url"
       @load="isLoaded = true"
     >
-    <i class="fas fa-arrow-left lightbox-nav-arrows" @click="$emit('lightbox-prev')"></i>
-    <i class="fas fa-arrow-right lightbox-nav-arrows" @click="$emit('lightbox-next')"></i>   
+    <i 
+      v-if="this.imageCount > 1 && this.currentIndex > 0" 
+      class="fas fa-arrow-left lightbox-nav-arrows" 
+      @click="$emit('lightbox-prev')">
+    </i>
+    
+    <i 
+      v-if="this.imageCount > 1 && this.currentIndex < this.imageCount-1" 
+      class="fas fa-arrow-right lightbox-nav-arrows" 
+      @click="$emit('lightbox-next')">
+    </i>   
   </div>
 </template>
 
 <script>
 export default {
   name: 'lightbox',
-  props: ['url'],
+  props: ['url','imageCount', 'currentIndex'],
   data() {
     return {
       isLoaded: false
     }
-  },
+  }
 }
 </script>
 
@@ -57,9 +66,11 @@ export default {
   font-size: 1.5em;
   padding: 10px;
   position: absolute;
+  height: 40px;
+  width: 40px;
   top: 50%;
   cursor: pointer;
-  z-index: 999999;
+  z-index: 9999;
 }
 
 
@@ -73,16 +84,38 @@ export default {
 
 .lightbox-nav.fa-times{
   top: 10px;
-  left: 20px;
+  left: 10px;
 }
 
 @media screen and (max-width: 600px) {
   .lightbox-main-container img{
-    width: 80%;
+    max-width: 100%;
     height: auto;
   }
   .lightbox-nav-arrows{
     bottom: 0;
   }
+
+  .lightbox-nav-arrows{
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-size: 1.5em;
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+    cursor: pointer;
+    z-index: 999999;
+  }
+
+  .lightbox-nav-arrows.fa-arrow-right{
+    right: 0;
+    border-radius: 20px 0 0 20px;
+  }
+
+  .lightbox-nav-arrows.fa-arrow-left{
+    left: 0;
+    border-radius: 0 20px 20px 0;
+  }
+
 }
 </style>

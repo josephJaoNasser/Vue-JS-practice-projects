@@ -3,6 +3,8 @@
     <transition name="fade">
       <Lightbox 
         v-bind:url="this.post.media[mediaIndex]"
+        v-bind:imageCount="this.post.media.length"
+        v-bind:currentIndex="this.mediaIndex"
         v-if="this.mediaIndex > -1"
         v-on:lightbox-closed="mediaIndex = -1"
         v-on:lightbox-prev="()=>{if(mediaIndex>0){mediaIndex--}}"
@@ -40,6 +42,7 @@
         v-bind:class="{
           'single-image':(this.post.media.length == 1),
           'image-grid':(this.post.media.length > 1),
+          'double-image':(this.post.media.length == 2),
           'odd-images':(this.post.media.length == 3),
           'portrait-img-preview' : this.isPortraitPreview
           }"
@@ -153,6 +156,7 @@ export default {
   gap: 2px;
 }
 
+.double-image > .post-media-preview,
 .single-image > .post-media-preview{
   max-height: 400px;
 }
@@ -160,17 +164,19 @@ export default {
 .odd-images > .post-media-preview:nth-child(3){
   grid-row: 1 / span 3;
   grid-column: 2;
+  max-height: 100%;
 }
 
 .post-media-preview{
+  max-height: 200px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #ddd;
 }
 
 .post-media-preview img{  
-  width: 100%;  
   height: 100%;
+  width: 100%;
   object-fit: cover;
   background-color: #ddd;
   cursor: pointer;
@@ -194,6 +200,7 @@ export default {
   margin-left: 10px;
   flex-shrink: 17;
   flex-grow: 1;
+  max-width: 90%;
 }
 
 .post-date, .post-text{

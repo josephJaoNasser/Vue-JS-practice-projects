@@ -11,9 +11,10 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const router = express.Router();
 
+
 //DB CONNECTION
 //Create mongo connection using mongoose
-const connectionString = 'mongodb+srv://jjnasser:yHyXGbJXLhR0PN0G@cluster0.yjzbg.mongodb.net/Cluster0?retryWrites=true&w=majority'
+const connectionString = 'mongodb+srv://jjnasser:yHyXGbJXLhR0PN0G@postapp.yjzbg.mongodb.net/PostApp?retryWrites=true&w=majority'
 const conn = mongoose.createConnection(connectionString)
 
 //Initialize gridfs
@@ -71,7 +72,6 @@ module.exports = router;
 router.post('/register',async (req,res) =>{
     
     const users = await loadUsersCollection();
-    console.log(req.body.profileImage)
     //check if user typed in a proper username
     if(req.body.username.length < 1){
         return res.status(400).json({

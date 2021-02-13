@@ -40,7 +40,6 @@ const actions = {
       const uploaded = await axios.post(url+'upload/profile-image',formData).catch((err)=> {
          commit('upload_profile_img_failed',err)
       })
-      console.log(uploaded.data.filename)
       newUser.profileImage = uploaded.data.filename
       const res = await axios.post(url+'register', newUser).catch((err) => {
          commit('registration_err',err.response.data);
@@ -66,7 +65,6 @@ const actions = {
          localStorage.setItem('token', res.data.token);
          //set the axios default headers
          axios.defaults.headers.common['Authorization'] = res.data.token;
-         console.log(res)
          commit('login_success',res);           
       }
       return res;
