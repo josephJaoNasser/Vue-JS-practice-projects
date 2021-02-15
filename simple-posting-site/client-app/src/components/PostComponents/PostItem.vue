@@ -52,10 +52,10 @@
           v-for="(item, index) in this.post.media"
           v-bind:item="item"
           v-bind:index="index"
-          v-bind:key="index"   
+          v-bind:key="index.filename" 
         >
           <img 
-            :src="'./api/posts/post-media/'+item"
+            :src="`./api/posts/${post._id}/media/medium/${item.filename}`"
             @click="mediaIndex = index"
           >          
         </div>
@@ -162,9 +162,9 @@ export default {
 }
 
 .odd-images > .post-media-preview:nth-child(3){
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 2;
   grid-column: 2;
-  max-height: 100%;
+  max-height: 400px;
 }
 
 .post-media-preview{

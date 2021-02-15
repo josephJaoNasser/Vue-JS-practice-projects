@@ -56,7 +56,7 @@ const actions = {
       const res = await axios.post(url,formData).catch((err)=> {
          commit('post_send_failed',err);
       })
-      console.log(res.data)
+      //console.log(res.data)
 
      commit('post_send_success',res.data.post);
    },
@@ -132,7 +132,7 @@ const mutations = {
    },
 
    post_update_err: (state, error) => {
-      console.log('update error')
+      //console.log('update error')
       state.loadingStates.updatingPost = false;
       state.postsError = error
    },
