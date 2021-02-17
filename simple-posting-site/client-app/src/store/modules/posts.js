@@ -54,7 +54,7 @@ const actions = {
       formData.append('postContent' , JSON.stringify(postContent))
 
       const res = await axios.post(url,formData).catch((err)=> {
-         commit('post_send_failed',err);
+         commit('post_send_failed',err,res);
       })
       //console.log(res.data)
 
@@ -82,6 +82,10 @@ const actions = {
       }     
       
    },
+
+   async clearPosts({commit}){
+      commit('clear_posts')
+   }
 
 };
 
@@ -117,9 +121,10 @@ const mutations = {
       state.loadingStates.sendingPost = false;
    },
    
-   post_send_failed: (state, err) => {
+   post_send_failed: (state, error, response) => {
       state.loadingStates.sendingPost = false;
-      console.log(err)
+      console.log(response)
+      state.postsError = error
    },
 
    removePost: (state, id) => {
@@ -148,7 +153,9 @@ const mutations = {
       }
       
       state.loadingStates.updatingPost = false; 
-   }
+   },
+
+   clear_posts: (state) => state.posts = []
 };
 
 export default{

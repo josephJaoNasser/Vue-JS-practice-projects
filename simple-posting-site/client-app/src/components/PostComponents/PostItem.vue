@@ -2,18 +2,15 @@
   <div class="post-item-main-container">
     <transition name="fade">
       <Lightbox 
-        v-bind:url="this.post.media[mediaIndex]"
-        v-bind:imageCount="this.post.media.length"
-        v-bind:currentIndex="this.mediaIndex"
-        v-if="this.mediaIndex > -1"
-        v-on:lightbox-closed="mediaIndex = -1"
-        v-on:lightbox-prev="()=>{if(mediaIndex>0){mediaIndex--}}"
-        v-on:lightbox-next="()=>{if(mediaIndex < this.post.media.length-1){mediaIndex++}}"
+        :images="imageData"
+        :clickedImageIndex="this.clickedImageIndex"
+        v-if="imageData.length"
+        v-on:lightbox-closed="imageData = []"
       />
     </transition>
     <a class="post-avatar avatar small" href="/profile">
       <!-- avatar here -->
-      <img :src="'./api/users/profile-images/'+this.post.user._id+'/'+this.post.user.profile_image" />
+      <img :src="`./api/users/${this.post.user._id}/profile-images/${this.post.user.profile_image.filename}?size=small`" />
     </a>
 
     <div class="post-body mb-3">
@@ -38,13 +35,12 @@
       <div 
         class="post-media-container"
         ref="media" 
-        v-if="this.post.media"
+        v-if="this.post.media.length"
         v-bind:class="{
           'single-image':(this.post.media.length == 1),
           'image-grid':(this.post.media.length > 1),
           'double-image':(this.post.media.length == 2),
-          'odd-images':(this.post.media.length == 3),
-          'portrait-img-preview' : this.isPortraitPreview
+          'odd-images':(this.post.media.length == 3)
           }"
         >
         <div 
@@ -55,8 +51,8 @@
           v-bind:key="index.filename" 
         >
           <img 
-            :src="`./api/posts/${post._id}/media/medium/${item.filename}`"
-            @click="mediaIndex = index"
+            :src="`./api/posts/${post._id}/media/${item.filename}?size=medium`"
+            @click="openLightbox(post,index)"
           >          
         </div>
       </div>  
@@ -117,9 +113,9 @@ export default {
   },
   data(){
     return {
-      currentUserId: this.$store.getters.currentUser._id ,
-      isPortraitPreview: false,
-      mediaIndex: -1
+      currentUserId: this.$store.getters.currentUser._id,
+      imageData: [],
+      clickedImageIndex: -1
     }
   },
   methods: {
@@ -140,7 +136,14 @@ export default {
           return input.substring(0, limit) + '...';
         }
         return input;
-      }
+    },
+
+    openLightbox(post, clickedImageIndex){
+      post.media.forEach(item => {
+        this.imageData.push(`./api/posts/${post._id}/media/${item.filename}?size=original`)
+        this.clickedImageIndex = clickedImageIndex
+      });
+    }
   }
 }
 </script>

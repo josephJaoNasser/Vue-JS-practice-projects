@@ -36,18 +36,18 @@ const actions = {
 
       const formData = new FormData()
       formData.append('profile-image', newUser.profileImage)
-
-      const uploaded = await axios.post(url+'upload/profile-image',formData).catch((err)=> {
-         commit('upload_profile_img_failed',err)
-      })
-      newUser.profileImage = uploaded.data.filename
+      
       const res = await axios.post(url+'register', newUser).catch((err) => {
          commit('registration_err',err.response.data);
       });
 
       if(res.data.success){
-         commit('registration_success')
-      }
+         await axios.post(`${url}/${res.data.user_id}/upload/profile-image`,formData).catch((err)=> {
+            commit('upload_profile_img_failed',err)
+         })         
+      }  
+
+      commit('registration_success')
       
       return res;
    },

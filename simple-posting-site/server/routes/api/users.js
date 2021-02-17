@@ -2,6 +2,7 @@ const { text, json } = require('body-parser');
 const express = require('express');
 const multer = require('multer');
 const Grid = require('gridfs-stream');
+const sharp = require('sharp')
 const crypto = require('crypto')
 const mongoose = require('mongoose');
 const GridFsStorage = require('multer-gridfs-storage');
@@ -10,7 +11,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const router = express.Router();
-
+const fs = require('fs');
 
 //DB CONNECTION
 //Create mongo connection using mongoose
@@ -55,7 +56,7 @@ var storage = new GridFsStorage({
     }    
   }
 });
-const upload = multer({ storage });
+
 
 //LOAD USERS COLLECTION
 async function loadUsersCollection(){
@@ -68,10 +69,107 @@ async function loadUsersCollection(){
 
 module.exports = router;
 
-//REGISTER/CREATE USERS
-router.post('/register',async (req,res) =>{
+//UPLOAD AVATAR
+const imageCompressor = async (file, res,next) => {
+    if (!file){
+        return json({
+            msg: 'No images found'
+        })
+    };
+
+    const filename_large = file.filename.replace(/(\.[\w\d_-]+)$/i, '_large$1');
+    await sharp(file.destination+'/'+file.filename)
+        .resize(600)   
+        .toFormat("jpeg")
+        .jpeg({ 
+            quality: 60,
+            force: true, 
+        })
+        .toFile(file.destination + `/${filename_large}`); 
+        
+    const filename_medium = file.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1');
+    await sharp(file.destination+'/'+file.filename)
+        .resize(320)   
+        .toFormat("jpeg")
+        .jpeg({ 
+            quality: 70,
+            force: true, 
+        })
+        .toFile(file.destination + `/${filename_medium}`);   
+
+    const filename_small = file.filename.replace(/(\.[\w\d_-]+)$/i, '_small$1');
+    await sharp(file.destination+'/'+file.filename)
+        .resize(70)   
+        .toFormat("jpeg")
+        .jpeg({ 
+            quality: 90,
+            force: true, 
+        })
+        .toFile(file.destination + `/${filename_small}`);   
     
-    const users = await loadUsersCollection();
+};
+
+router.post('/:userid/upload/profile-image', async(req, res)=>{
+
+    const destination = './server/public/users/'+req.params.userid+'/profile-image/'
+
+    //Declare multer storage 
+    const storage = multer.diskStorage({
+        destination: destination,
+        filename: (req, file, cb) => {
+            if (file.mimetype.startsWith("image")) {     
+                const filename = crypto.randomBytes(16).toString('hex') + path.extname(file.originalname);
+                cb(null, filename)
+            }
+            else {
+                return json({
+                    msg: 'The file uploaded was not an image',
+                    success: false
+                })
+            }           
+        } 
+    })
+    const upload = multer({ storage:storage }).single('profile-image');
+    
+    //Call the upload function, then post the text and etc. to the DB
+    upload(req, res, async (err)=>{
+        
+        if(err) {
+            return res.end("Error uploading file.");
+        }
+
+        //create compressed versions of the image
+        await imageCompressor(req.file, res, (err) => {
+            if(err){
+                console.log(err)
+                return res.status(400).json({
+                    err: err,         
+                    msg: 'File compresson failed'          
+                })
+            }
+
+            res.status(200).json({
+                msg: 'Successfully compressed files'
+            })
+        }) 
+        
+        const users = await loadUsersCollection();
+        const updated = await users.updateOne(
+            {_id: new mongodb.ObjectID(req.params.userid)},
+            {$set: {profile_image: req.file}}       
+        )
+    
+    })
+})
+
+
+//REGISTER/CREATE USERS
+
+router.post('/register',async (req,res) =>{ 
+    
+    const _id = new mongodb.ObjectID()
+    const users = await loadUsersCollection();   
+
     //check if user typed in a proper username
     if(req.body.username.length < 1){
         return res.status(400).json({
@@ -150,89 +248,55 @@ router.post('/register',async (req,res) =>{
             field: 'email'
         });      
     }
-    
+
     //hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
-    const newID = new mongodb.ObjectID()
+
     //insert to database
     await users.insertOne({
-        _id : newID,
+        _id : _id,
         uname: req.body.username,
         dname: req.body.displayName,
         pwd: hashedPassword ,
         email: req.body.email,
-        profile_image: req.body.profileImage,
+        profile_image: [],
         bio: req.body.bio, 
         joinedOn: new Date()
     });
 
     return res.status(201).json({
         success: true,
+        user_id: _id,
         msg: 'Registered!'
     })
 })
 
-//UPLOAD AVATAR
-router.post('/upload/profile-image',upload.single('profile-image'), (req,res) =>{
-    return res.status(201).json({
-        success: true,
-        msg: 'Profile image uploaded',
-        filename: req.file.filename
-    })
-})
 
 //GET ONE AVATAR
-router.get('/profile-images/:id/:filename', async (req,res) => {
-    const users = await loadUsersCollection();
-    let user;    
-    try{
-        user = await users.findOne(
-            {
-                _id: new mongodb.ObjectID(req.params.id) , 
-                profile_image: req.params.filename
-            }
-        )
-    }
-    catch(err){
-        return res.status(400).json({
-            msg: err
-        })
-    }   
+router.get('/:userId/profile-images/:filename', async (req,res) => {
     
-    if(user){
-        gridfs.files.findOne({filename: req.params.filename}, (err, file)=>{
-            //check if files
-            if(!file || file.length === 0){
-                return res.status(404).json({
-                    msg: 'File does not exist'
-                })
-            }
-            if (file.contentType === 'image/jpeg' ||         
-                file.contentType === 'image/jpg' ||
-                file.contentType === 'image/png' || 
-                file.contentType === 'img/png' ) {
-    
-                const readstream = gridfs.createReadStream(file.filename)
-                readstream.pipe(res)
-            }else{
-                return res.status(404).json({
-                    msg: 'The file is not an image'
-                })
-            }
-        })
+    let readStream;
+    switch(req.query.size){
+        case 'original':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/users/${req.params.userId}/profile-image/${req.params.filename}`))
+            break;
+        case 'small':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/users/${req.params.userId}/profile-image/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_small$1')}`))
+            break;
+        case 'medium':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/users/${req.params.userId}/profile-image/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')}`))
+            break;
+        case 'large':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/users/${req.params.userId}/profile-image/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_large$1')}`))
+            break;
+        default:
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/users/${req.params.userId}/profile-image/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')}`))
+            break;
     }
-    else{
-        return res.status(404).json({
-            msg: 'File not found'
-        })
-    }
-    
+
+    readStream.pipe(res)
 });
-
-
-
-
 
 
 //LOGIN 

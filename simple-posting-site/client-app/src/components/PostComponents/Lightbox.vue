@@ -13,21 +13,33 @@
       </div>   
     </transition>
     <i class="fa fa-times lightbox-nav" @click="$emit('lightbox-closed')"></i>
-    <img 
-      class="absolute-center" 
-      :src="'./api/posts/post-media/'+this.url"
-      @load="isLoaded = true"
+
+    <div 
+      v-for="(item, index) in this.images"      
+      v-bind:index="index"
+      v-bind:key="index"
+      v-show="currentIndex==index"
     >
+      <img 
+        class="absolute-center" 
+        :src="`${item}`"           
+        @load="isLoaded = true"
+      >
+    </div>
+    
+    
     <i 
-      v-if="this.imageCount > 1 && this.currentIndex > 0" 
-      class="fas fa-arrow-left lightbox-nav-arrows" 
-      @click="$emit('lightbox-prev')">
+      v-if="this.images.length > 1 && this.currentIndex > 0" 
+      class="fas fa-arrow-left lightbox-nav-arrows"
+      @click="prev"
+    >
     </i>
     
     <i 
-      v-if="this.imageCount > 1 && this.currentIndex < this.imageCount-1" 
-      class="fas fa-arrow-right lightbox-nav-arrows" 
-      @click="$emit('lightbox-next')">
+      v-if="this.images.length > 1 && this.currentIndex < this.images.length -1" 
+      class="fas fa-arrow-right lightbox-nav-arrows"
+      @click="next"
+    >
     </i>   
   </div>
 </template>
@@ -35,12 +47,27 @@
 <script>
 export default {
   name: 'lightbox',
-  props: ['url','imageCount', 'currentIndex'],
+  props: ['images','clickedImageIndex'],
   data() {
     return {
-      isLoaded: false
+      isLoaded: false,
+      currentIndex: -1
     }
-  }
+  }, 
+  methods: {
+    next(){
+      if(this.currentIndex < this.images.length-1)
+        this.currentIndex++
+    },
+    prev(){
+      if(this.currentIndex > 0)
+        this.currentIndex--
+    }
+  },
+  created() {
+    if(this.clickedImageIndex != -1)
+      this.currentIndex = this.clickedImageIndex
+  },
 }
 </script>
 

@@ -2,7 +2,7 @@
   <div class="mobile-user-bar-main-div">
         <a class="avatar small" href="/profile">
             <!-- avatar here -->
-            <img :src="'./api/users/profile-images/'+this.currentUser._id+'/'+this.currentUser.profile_image" />
+            <img :src="`./api/users/${this.currentUser._id}/profile-images/${this.currentUser.profile_image.filename}?size=small`" />
          </a>
           <button @click="logout" style="float:right">Logout</button>
      </div>

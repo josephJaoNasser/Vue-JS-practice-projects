@@ -8,7 +8,7 @@
          <i class="fas fa-arrow-left"></i>
       </button>
       <div class="avatar large">
-         <img :src="'./api/users/profile-images/'+this.currentUser._id+'/'+this.currentUser.profile_image" />
+         <img :src="`./api/users/${this.currentUser._id}/profile-images/${this.currentUser.profile_image.filename}?size=medium`" />
          <!-- avatar here -->
       </div>
       <div class="p-3">

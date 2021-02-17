@@ -79,7 +79,8 @@ export default {
         return strTime;
       }
     },
-     async created(){                    
+     async created(){    
+      this.$store.dispatch('clearPosts')                
       this.loadPosts(this.id).then(() =>{
         if(this.$route.name == 'Home'){
           setInterval( () => {

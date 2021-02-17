@@ -2,13 +2,13 @@ const { text, json } = require('body-parser');
 const express = require('express');
 const multer = require('multer');
 const Grid = require('gridfs-stream');
-const crypto = require('crypto')
+const crypto = require('crypto');
 const mongoose = require('mongoose');
-const GridFsStorage = require('multer-gridfs-storage');
+const fs = require('fs');
 const path = require('path');
 const mongodb = require('mongodb');
 const router = express.Router();
-const sharp = require('sharp')
+const sharp = require('sharp');
 
 //DB CONNECTION (using external file)
 //Create mongo connection using mongoose
@@ -53,8 +53,6 @@ conn.once('open',()=>{
 //   }
 // });
 
-//Multer storage engine WITHOUT GRIDFS
-
 //Load collection
 async function loadPostCollection(){
     var db = conn
@@ -80,19 +78,30 @@ router.get('/:username', async (req, res) => {
 });
 
 //Get post media
-router.get('/:id/media/medium/:filename',async(req, res) => {
-    return res.sendFile(path.join(__dirname, `../../public/posts/${req.params.id}/media/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')}`))
-   
-})
+router.get('/:postId/media/:filename',async(req, res) => {
+    
+    let readStream;
 
-router.get('/:id/media/original/:filename',async(req, res) => {
-    return res.sendFile(path.join(__dirname, `../../public/posts/${req.params.id}/media/${req.params.filename}`))
-})
+    switch(req.query.size){
+        case 'original':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/posts/${req.params.postId}/media/${req.params.filename}`))
+            break;
+        case 'medium':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/posts/${req.params.postId}/media/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')}`))
+            break;
+        case 'large':
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/posts/${req.params.postId}/media/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_large$1')}`))
+            break;
+        default:
+            readStream = fs.createReadStream(path.join(__dirname, `../../public/posts/${req.params.postId}/media/${req.params.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')}`))
+            break;
+    }
 
+    readStream.pipe(res)
+})
 
 //Add posts
 const imageCompressor = async (files, res,next) => {
-
     if (!files){
         return json({
             msg: 'No images found'
@@ -104,13 +113,25 @@ const imageCompressor = async (files, res,next) => {
         const newFilename = file.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1');
 
         await sharp(file.destination+'/'+file.filename)
-          .resize(1000)   
+          .resize(600)   
           .toFormat("jpeg")
-          .jpeg({ quality: 80 })
+          .jpeg({ quality: 90 })
           .toFile(file.destination + `/${newFilename}`);         
       })
     );
-  };
+
+    await Promise.all(
+        files.map(async file => {     
+          const newFilename = file.filename.replace(/(\.[\w\d_-]+)$/i, '_large$1');
+  
+          await sharp(file.destination+'/'+file.filename)
+            .resize(1000)   
+            .toFormat("jpeg")
+            .jpeg({ quality: 80 })
+            .toFile(file.destination + `/${newFilename}`);         
+        })
+      );
+};
 
 router.post('/',async(req,res) => {
     const posts = await loadPostCollection();
@@ -141,22 +162,36 @@ router.post('/',async(req,res) => {
             return res.end("Error uploading file.");
         }
 
-        //create compressed versions of the image
-        await imageCompressor(req.files, res, (err) => {
-            if(err){
-                return res.status(400).json({
-                    err: err,         
-                    msg: 'File compresson failed'          
+        if(!req.files.length){
+           removeDir(path.join(__dirname, `../../public/posts/${_id}/`))
+        }
+
+        if(req.files.length){
+            //create compressed versions of the image
+            await imageCompressor(req.files, res, (err) => {
+                if(err){
+                    return res.status(400).json({
+                        err: err,         
+                        msg: 'File compresson failed'          
+                    })
+                }
+
+                res.status(200).json({
+                    msg: 'Successfully compressed files'
                 })
-            }
-
-            res.status(200).json({
-                msg: 'Successfully compressed files'
             })
-        })
 
+        }
+        
         //Parse the stringified JSON data of the post content
         postContent = JSON.parse(req.body.postContent)
+
+        if(!postContent.text.length && !req.files.length){
+            return res.status(400).json({
+                success:false,
+                msg: 'Please attatch an image or say something!'
+            })
+        }
 
         const insertion = await posts.insertOne({
             _id: _id,
@@ -170,7 +205,7 @@ router.post('/',async(req,res) => {
 
         return res.status(200).json({
             success: true,
-            msg: req.files.length + ' files Uploaded successfully!',
+            msg: 'Post sent with ' + req.files.length + ' file/s Uploaded!',
             files: req.files.path,
             post: data
         })
@@ -195,39 +230,42 @@ router.put('/:id', async (req, res) =>{
 
 
 //Delete posts
-router.delete('/:id', async (req, res) =>{
+const removeDir = function(path) {
+    if (fs.existsSync(path)) {
+      const files = fs.readdirSync(path)
+  
+      if (files.length > 0) {
+        files.forEach(function(filename) {
+          if (fs.statSync(path + "/" + filename).isDirectory()) {
+            removeDir(path + "/" + filename)
+          } else {
+            fs.unlinkSync(path + "/" + filename)
+          }
+        })
+        fs.rmdirSync(path)
+      } else {
+        fs.rmdirSync(path)
+      }
+    } else {
+      console.log("Directory path not found.")
+    }
+  }
+
+router.delete('/:postId', async (req, res) =>{
     const posts = await loadPostCollection();       
     const post = await posts.findOne({
-        _id: new mongodb.ObjectID(req.params.id)
+        _id: new mongodb.ObjectID(req.params.postId)
     })
 
-    // if(post.media){
-    //     post.media.forEach(item => {
-    //         gridfs.files.findOne({filename: item},(err,file) => {
-    //             if(err){
-    //                 return res.status(400).json({msg: err})
-    //             }
-    //             if(file){
-    //                 gridfs.remove({
-    //                     _id: file._id,
-    //                     root: 'posts'
-    //                 }, (err) => {
-    //                     if(err){
-    //                         res.status(404).json({
-    //                             msg: 'The file is not found. Perhaps this file has been already deleted'
-    //                         })
-    //                     }
-    //                 })
-    //             }               
-    //         })
-            
-    //     });  
-    // }   
-    
+    if(post.media.length){
+        removeDir(path.join(__dirname, `../../public/posts/${req.params.postId}/`))
+    }
     
     await posts.deleteOne({
-        _id: new mongodb.ObjectID(req.params.id)
+        _id: new mongodb.ObjectID(req.params.postId)
     }); 
 
-    res.status(201).send();
+    res.status(201).json({
+        msg: 'Post deleted.'
+    });
 })
