@@ -29,6 +29,7 @@ const actions = {
       commit('registration_request');      
 
       commit('upload_profile_img_request')
+
       if(!newUser.profileImage){
          commit('upload_profile_img_failed',{msg: 'Please upload a .jpg or .png file'})
          return 
@@ -36,18 +37,14 @@ const actions = {
 
       const formData = new FormData()
       formData.append('profile-image', newUser.profileImage)
+      formData.append('newUserData', JSON.stringify(newUser))
       
-      const res = await axios.post(url+'register', newUser).catch((err) => {
+      const res = await axios.post(url+'register', formData).catch((err) => {
          commit('registration_err',err.response.data);
       });
 
-      if(res.data.success){
-         await axios.post(`${url}/${res.data.user_id}/upload/profile-image`,formData).catch((err)=> {
-            commit('upload_profile_img_failed',err)
-         })         
-      }  
-
       commit('registration_success')
+      
       
       return res;
    },

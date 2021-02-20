@@ -48,7 +48,6 @@ export default {
          else{
             this.url = []
          }
-         console.log(this.url)
       }
    },
 }

@@ -3,7 +3,7 @@
       <a href="/profile" class="user-info">
          <div class="avatar small" >
          <!-- avatar here -->
-            <img :src="`./api/users/${this.currentUser._id}/profile-images/${this.currentUser.profile_image.filename}?size=small`" />
+            <img :src="`./api/users/${this.currentUser._id}/profile-images/${this.currentUser.profile_image}?size=small`" />
          </div>
          <div id="user-card-text" class="text-left ml-3">
                

@@ -66,6 +66,7 @@ export default {
     setImage(){          
       const _validFileExtensions = ["gif","jpg", "webp", "jpeg", "png","mp4","mov"];    
       const file = this.$refs.mediaupload.files;  
+      
       if((file.length + this.url.length) <= 4){
         file.forEach((item) => {
           var ext =  item.name.split('.').pop();         

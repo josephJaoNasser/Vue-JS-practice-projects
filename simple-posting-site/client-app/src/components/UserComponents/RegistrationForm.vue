@@ -110,7 +110,7 @@ export default {
          }
 
          this.$store.dispatch('registerUser',newUser).then(res => {
-            if(res.data.success){
+            if(res.data.success){               
                this.$router.push('/registration-success')
             }
          }).catch((err)=> { console.log(err +'\n'+this.userErrors.field) }) 

@@ -10,7 +10,7 @@
     </transition>
     <a class="post-avatar avatar small" href="/profile">
       <!-- avatar here -->
-      <img :src="`./api/users/${this.post.user._id}/profile-images/${this.post.user.profile_image.filename}?size=small`" />
+      <img :src="`./api/users/${this.post.user._id}/profile-images/${this.post.user.profile_image}?size=tiny`" />
     </a>
 
     <div class="post-body mb-3">
@@ -51,7 +51,7 @@
           v-bind:key="index.filename" 
         >
           <img 
-            :src="`./api/posts/${post._id}/media/${item.filename}?size=medium`"
+            :src="`./api/posts/${post._id}/media/${item}?size=medium`"
             @click="openLightbox(post,index)"
           >          
         </div>
@@ -140,11 +140,15 @@ export default {
 
     openLightbox(post, clickedImageIndex){
       post.media.forEach(item => {
-        this.imageData.push(`./api/posts/${post._id}/media/${item.filename}?size=original`)
+        this.imageData.push(`./api/posts/${post._id}/media/${item}?size=large`)
         this.clickedImageIndex = clickedImageIndex
       });
     }
-  }
+  },
+  created() {
+    //console.log()
+  },
+
 }
 </script>
 
@@ -172,6 +176,7 @@ export default {
 
 .post-media-preview{
   max-height: 200px;
+  min-height: 200px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #ddd;
@@ -213,6 +218,12 @@ export default {
 @media screen and (max-width: 600px){
   .single-image > .post-media-preview{
     max-height: 100%;
+  }
+
+  .post-media-preview{
+    max-height: 100px;
+    min-height: 100px;
+    border-radius: 6px;
   }
 
 }

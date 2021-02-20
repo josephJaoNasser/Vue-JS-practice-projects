@@ -7,7 +7,7 @@
           <div 
             class="loading-animation"
             v-if="this.userLoadingStates.registeringUser
-            && !this.errors" 
+            && !this.userErrors.msg" 
           >
             <div class="hollow-dots-spinner">
                 <div class="dot"></div>
