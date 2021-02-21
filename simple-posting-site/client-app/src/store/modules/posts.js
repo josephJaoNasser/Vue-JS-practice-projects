@@ -56,15 +56,23 @@ const actions = {
       const res = await axios.post(url,formData).catch((err)=> {
          commit('post_send_failed',err,res);
       })
-      console.log(res)
-     commit('post_send_success',res.data.post);
+
+
+      if(res.data.success){
+         commit('post_send_success',res.data.post);
+      }
+      
    },
 
    //delete posts
    async deletePost({ commit },id){
-      state.loadingStates.deletingPost = true
-      await axios.delete(`${url}${id}`);
-      commit('removePost',id);
+      commit('remove_post_request')
+
+      const res = await axios.delete(`${url}${id}`).catch((err) => { commit('remove_post_error', err) });
+
+      if(res.data.success){
+         commit('remove_post_success',id);
+      }      
    },
 
    //update posts
@@ -75,9 +83,9 @@ const actions = {
          updatedPostObject
       ).catch((err) => { commit('post_update_err', err) });
 
-      if(res)
+      if(res.data.success)
       {
-         commit('post_update_success',res.data)   
+         commit('post_update_success',res.data.updatedData)   
       }     
       
    },
@@ -125,9 +133,18 @@ const mutations = {
       state.postsError = error
    },
 
-   removePost: (state, id) => {
+   remove_post_request: (state) => {
+      state.loadingStates.deletingPost = true
+   },
+
+   remove_post_success: (state, id) => {
       state.posts = state.posts.filter(post => post._id !== id);
       state.loadingStates.deletingPost = false
+   },
+
+   remove_post_failed: (state, error) => {
+      state.loadingStates.deletingPost = false
+      state.postsError = error
    },
 
    post_update_request: (state) => {

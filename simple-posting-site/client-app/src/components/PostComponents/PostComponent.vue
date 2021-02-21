@@ -10,7 +10,7 @@
         v-bind:key="index"
       > 
         <i @click="removeSelectedAttatchments(index)" class="fas fa-times"></i>       
-        <img v-bind:src="item"><br>
+        <img v-bind:src="item">
         
       </div>
       
@@ -52,15 +52,17 @@ export default {
       posting: false,
       errorMsg: '',
       url: [],
-      attatchments: null
+      attatchments: []
     }
   },
   methods: {
     createPost(){
-      this.$store.dispatch('createPost', {text: this.text, user: this.currentUser, media:this.attatchments})
-      this.text = ''
-      this.url = []
-      this.attatchments=[]
+      if(!this.postLoadingStates.sendingPost){
+        this.$store.dispatch('createPost', {text: this.text, user: this.currentUser, media:this.attatchments})
+        this.text = ''
+        this.url = []
+        this.attatchments=[]
+      }     
     },
     
     setImage(){          
@@ -71,23 +73,25 @@ export default {
         file.forEach((item) => {
           var ext =  item.name.split('.').pop();         
           if(_validFileExtensions.includes(ext.toLowerCase())){
-            this.url.push(URL.createObjectURL(item));                   
+            this.url.push(URL.createObjectURL(item));    
           }
           else{
             this.errorMsg = 'The file you uploaded is not supported...'
             this.$refs.mediaupload.value=null
           }     
         });
+
         this.errorMsg = ''
-        this.attatchments = file
+        this.attatchments = this.attatchments.concat(Array.from(file)) 
       }
       else if((file.length + this.url.length) > 4){
         this.errorMsg = 'Only up to 4 images are allowed'     
-      }        
+      }                      
     },
 
     removeSelectedAttatchments(index){
       this.url.splice(index, 1)
+      this.attatchments.splice(index,1) 
     }
   }
 }
@@ -98,7 +102,9 @@ export default {
 .post-attatchments-preview{
   display: flex;
   justify-content: flex-start;
+  overflow-x: auto;
 }
+
 .post-attatchments-preview img{
   width: 100px;
   height: 100px;
@@ -106,6 +112,11 @@ export default {
   border: 1px solid #ddd;
   object-fit: cover;
   margin: 0 12px 12px 0;
+}
+
+.image-attatchments-preview{
+  display: inline-flex;
+  flex-direction: column;
 }
 
 .image-attatchments-preview > i{
@@ -151,10 +162,6 @@ export default {
 }
 
 @media screen and (max-width: 560px){ 
-
-  .post-attatchments-preview{
-    overflow-x: scroll;
-  }
 
  .post-attatchments-preview img{
    margin: -1em 12px 12px 0;

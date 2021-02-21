@@ -168,9 +168,9 @@ export default {
   max-height: 400px;
 }
 
-.odd-images > .post-media-preview:nth-child(3){
+.odd-images > .post-media-preview:nth-child(1){
   grid-row: 1 / span 2;
-  grid-column: 2;
+  /* grid-column: 2; */
   max-height: 400px;
 }
 

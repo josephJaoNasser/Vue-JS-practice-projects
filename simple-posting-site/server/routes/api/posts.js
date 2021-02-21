@@ -126,15 +126,6 @@ router.get('/:postId/media/:filename',async(req, res) => {
             break;
     }
     readStream.pipe(res)
-
-    // if(post.media.find(req.params.filename)){
-        
-    // }
-    // else{
-    //     return res.status(404).json({
-    //         msg: 'Image not found'
-    //     })
-    // }
     
 })
 
@@ -304,14 +295,25 @@ router.post('/',async(req,res) => {
 //Update posts
 router.put('/:id', async (req, res) =>{
     const posts = await loadPostCollection();
-    const updated = await posts.updateOne(
+    await posts.updateOne(
         {_id: new mongodb.ObjectID(req.params.id)},
         {$set: {text: req.body.text, updatedAt: new Date()}}       
-    )
+    ).catch((err)=>{
+        if(err) {
+            return res.status(404).json({
+                success: false,
+                msg: 'An error has occured while updating',
+                error: err
+            })
+        }
+    })
     
     data = await posts.findOne({_id: new mongodb.ObjectID(req.params.id)});
         
-    res.status(201).send(data);
+    return res.status(201).json({
+        success: true,
+        updatedData: data
+    })
     
 })
 
@@ -328,37 +330,69 @@ router.delete('/:postId', async (req, res) =>{
             filename: item,
             root: 'posts'
         },(err)=>{
-            if (err) return handleError(err);
+            if (err) {
+                res.status(404).json({
+                    success: false,
+                    msg: 'An error has occurred while deleting the post.',
+                    error: err
+                });
+            };
         })
 
         gridfs.remove({
             filename: item.replace(/(\.[\w\d_-]+)$/i, '_small$1'),
             root: 'posts'
         },(err)=>{
-            if (err) return handleError(err);
+            if (err) {
+                res.status(404).json({
+                    success: false,
+                    msg: 'An error has occurred while deleting the post.',
+                    error: err
+                });
+            };
         })
 
         gridfs.remove({
             filename: item.replace(/(\.[\w\d_-]+)$/i, '_medium$1'),
             root: 'posts'
         },(err)=>{
-            if (err) return handleError(err);
+            if (err) {
+                res.status(404).json({
+                    success: false,
+                    msg: 'An error has occurred while deleting the post.',
+                    error: err
+                });
+            };
         })    
 
         gridfs.remove({
             filename: item.replace(/(\.[\w\d_-]+)$/i, '_large$1'),
             root: 'posts'
         },(err)=>{
-            if (err) return handleError(err);
+            if (err) {
+                res.status(404).json({
+                    success: false,
+                    msg: 'An error has occurred while deleting the post.',
+                    error: err
+                });
+            };
         })
     })
     
 
     await posts.deleteOne({
         _id: new mongodb.ObjectID(req.params.postId)
+    }).then(()=>{
+        return res.status(201).json({
+            success: true,
+            msg: 'Post deleted.'
+        });
+    }).catch((err)=>{
+        return res.status(404).json({
+            success: false,
+            msg: 'An error has occurred while deleting the post.',
+            error: err
+        });
     }); 
 
-    res.status(201).json({
-        msg: 'Post deleted.'
-    });
 })

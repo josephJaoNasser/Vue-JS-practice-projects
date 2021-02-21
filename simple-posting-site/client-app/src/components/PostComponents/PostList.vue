@@ -80,11 +80,15 @@ export default {
       }
     },
      async created(){    
+
       this.$store.dispatch('clearPosts')                
       this.loadPosts(this.id).then(() =>{
-        if(this.$route.name == 'Home'){
+        if(this.$route.name == 'Home'){          
           setInterval( () => {
+            if(!this.loadingStates.sendingPost)
+            {
               this.loadPosts(this.id); 
+            }              
           }, 30000);
         }
         
