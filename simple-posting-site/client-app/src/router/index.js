@@ -38,13 +38,21 @@ const routes = [
     }
   },
   {
-    path: '/profile',
+    path: '/:username',
     name: 'Profile',
     component: () =>  import(/* webpackChunkName: "profile-page" */'../views/Profile.vue'),
     meta: {
       requiresAuth: true
     }
-  }
+  },
+  { 
+    path: '/errors/404', 
+    component: () =>  import(/* webpackChunkName: "404-page" */'../views/404.vue'), 
+  },  
+  { 
+    path: '*', 
+    redirect: '/errors/404'
+  },  
 ]
 
 const router = new VueRouter({

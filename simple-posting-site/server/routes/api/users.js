@@ -382,7 +382,8 @@ router.post('/login', async(req, res) =>{
                     username: user.uname,
                     displayName: user.dname,
                     profile_image:user.profile_image,
-                    bio: user.bio
+                    bio: user.bio,
+                    email: user.email
                 }
                 jwt.sign(payload, 'thesecretwasinsideusallalong', {expiresIn: "24h"}, (err,token) => {
                     res.status(200).json({
@@ -404,3 +405,31 @@ router.post('/login', async(req, res) =>{
 
 })
 
+//Find one user
+router.get('/:username', async (req, res)=>{
+    const users = await loadUsersCollection();
+    //search for username
+    let user = await users.findOne({uname: req.params.username},{ pwd: 0 });
+    
+    if(user){
+        const payload = {
+            _id: user._id,
+            username: user.uname,
+            displayName: user.dname,
+            profile_image:user.profile_image,
+            bio: user.bio,
+            email: user.email
+        }
+
+        return res.status(200).json({
+            success: true,
+            user: payload
+        })
+    }
+    else{
+        return res.status(404).json({
+            msg: 'User not found'
+        })
+    }
+   
+})

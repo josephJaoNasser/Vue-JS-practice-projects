@@ -25,6 +25,7 @@ const actions = {
    //load posts
    async loadPosts({ commit },uname){
       commit('fetching_post');
+      //console.log(id)
       const res = await axios.get(`${url}${uname ? uname: ''}`).catch((err)=>{    
          commit('fetching_post_err',err.message);
       });
@@ -90,6 +91,7 @@ const actions = {
       
    },
 
+   //clear posts state
    async clearPosts({commit}){
       commit('clear_posts')
    }
@@ -170,7 +172,9 @@ const mutations = {
       state.loadingStates.updatingPost = false; 
    },
 
-   clear_posts: (state) => state.posts = []
+   clear_posts: (state) => {
+      state.posts = []
+   }
 };
 
 export default{

@@ -45,7 +45,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'PostList',
-    props: ['id'],
+    props: ['username'],
     components: {
       PostItem
     },
@@ -80,14 +80,14 @@ export default {
       }
     },
      async created(){    
-
+      
       this.$store.dispatch('clearPosts')                
-      this.loadPosts(this.id).then(() =>{
+      this.loadPosts(this.username).then(() =>{
         if(this.$route.name == 'Home'){          
           setInterval( () => {
             if(!this.loadingStates.sendingPost)
             {
-              this.loadPosts(this.id); 
+              this.loadPosts(this.username); 
             }              
           }, 30000);
         }

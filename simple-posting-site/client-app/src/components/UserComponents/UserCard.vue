@@ -1,6 +1,6 @@
 <template>
    <div class="user-card-main-div">
-      <a href="/profile" class="user-info">
+      <a :href="`/${this.currentUser.username}`" class="user-info">
          <div class="avatar small" >
          <!-- avatar here -->
             <img :src="`./api/users/${this.currentUser._id}/profile-images/${this.currentUser.profile_image}?size=small`" />

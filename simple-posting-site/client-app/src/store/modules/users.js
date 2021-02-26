@@ -76,6 +76,18 @@ const actions = {
       return;      
    },
 
+   //get user info for one user
+   async getUserInfo({commit}, username){
+      const res = await axios.get(url+ username).catch((err) => {
+         commit('user_search_failed',err)
+      })
+
+      if(res.data.success){
+         return res.data.user
+      }
+
+   },
+
    //clear states (because of vuex persistedstate)
    clearUserStates({commit}){
       commit('clr_user_states')
@@ -134,6 +146,10 @@ const mutations = {
       state.user = ''
    },
 
+   user_search_failed: (state, err) => {
+      console.log(err)
+   },
+
    clr_user_states: (state) => {
       state.loadingStates = {
          registeringUser: false,
@@ -142,6 +158,7 @@ const mutations = {
       };
 
       state.userErrors = {}
+      state.searchedUser = {}
    }
 }
 

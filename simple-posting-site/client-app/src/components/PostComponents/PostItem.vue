@@ -8,7 +8,7 @@
         v-on:lightbox-closed="imageData = []"
       />
     </transition>
-    <a class="post-avatar avatar small" href="/profile">
+    <a class="post-avatar avatar small" :href="`/${this.post.user.username}`">
       <!-- avatar here -->
       <img :src="`./api/users/${this.post.user._id}/profile-images/${this.post.user.profile_image}?size=tiny`" />
     </a>
@@ -16,7 +16,9 @@
     <div class="post-body mb-3">
 
       <p class="post-author mb-0">
-        <strong>{{truncate(this.post.user.displayName, 18)}}</strong>
+        <a :href="`${this.post.user.username}`" style="color: #303030;">
+          <strong>{{truncate(this.post.user.displayName, 18)}}</strong>
+        </a>
       </p>
 
       <p class="post-date">
@@ -51,7 +53,7 @@
           v-bind:key="index.filename" 
         >
           <img 
-            :src="`./api/posts/${post._id}/media/${item}?size=medium`"
+            :src="`./api/posts/${post._id}/media/${item}?size=small`"
             @click="openLightbox(post,index)"
           >          
         </div>

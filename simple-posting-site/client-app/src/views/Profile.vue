@@ -8,15 +8,15 @@
          <i class="fas fa-arrow-left"></i>
       </button>
       <div class="avatar large">
-         <img :src="`./api/users/${this.currentUser._id}/profile-images/${this.currentUser.profile_image}?size=medium`" />
+         <img v-if="this.user._id" :src="`./api/users/${this.user._id}/profile-images/${this.user.profile_image}?size=medium`" />
          <!-- avatar here -->
       </div>
       <div class="p-3">
-         <h2>{{this.currentUser.displayName}}</h2>
-         <h4 style="opacity: 0.7">{{this.currentUser.username}}</h4>
+         <h2>{{this.user.displayName}}</h2>
+         <h4 style="opacity: 0.7">{{this.user.username}}</h4>
          
       </div>
-      <p style="opacity: 0.7">{{this.currentUser.bio}}</p>
+      <p style="opacity: 0.7">{{this.user.bio}}</p>
       <hr>
       
       <h4 class="posts-header font-weight-bold text-left">Your posts</h4>
@@ -36,7 +36,7 @@
          />    
       </transition>
      <PostList 
-         v-bind:id="this.currentUser.username"
+         v-bind:username="this.$route.params.username"
          v-on:updating-post="setUpdatePost"
          v-on:deleting-post="setDeletePost"
       /> 
@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import LoadingComponent from '@/components/LoadingComponents/LoadingComponent.vue'
 import ErrorComponent from '@/components/ErrorComponents/ErrorComponent.vue'
 
@@ -60,6 +59,7 @@ export default {
       return {
          updatePost: [],
          deletePost: [],
+         user: {}
       }
    },
    components: {
@@ -67,8 +67,9 @@ export default {
       ConfirmDeleteModal: ()=> import(/* webpackChunkName: "confirm-delete-modal-component" */'@/components/PostComponents/ConfirmDeleteModal.vue'),
       PostUpdateComponent: ()=> import(/* webpackChunkName: "post-update-component" */'@/components/PostComponents/PostUpdateComponent.vue'),
    },
-   computed: mapGetters(['currentUser']),
-   methods: {
+   
+   methods: {     
+
       setUpdatePost(post){
          this.updatePost = post
       },
@@ -76,7 +77,16 @@ export default {
       setDeletePost(post){
          this.deletePost = post
       }
-   }
+   },
+   created() {
+      this.$store.dispatch('getUserInfo',this.$route.params.username).then( user => {         
+         this.user = user  
+      }).catch(err => {
+         if(err){
+            this.$router.push('/errors/404')
+         }
+      })
+   },
    
 }
 </script>
