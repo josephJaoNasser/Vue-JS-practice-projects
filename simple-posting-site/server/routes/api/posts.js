@@ -2,18 +2,19 @@ const { text, json } = require('body-parser');
 const express = require('express');
 const multer = require('multer');
 const Grid = require('gridfs-stream');
-const sharp = require('sharp');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
+const imageCompressor = require('./image-compressor')
 const path = require('path');
 const mongodb = require('mongodb');
 const router = express.Router();
 const streamifier = require('streamifier');
-const { Console } = require('console');
 
-//DB CONNECTION (using external file)
 //Create mongo connection using mongoose
+//  Atlas connecton 
 const connectionString = 'mongodb+srv://jjnasser:yHyXGbJXLhR0PN0G@postapp.yjzbg.mongodb.net/PostApp?retryWrites=true&w=majority'
+
+
 const conn = mongoose.createConnection(connectionString)
 
 
@@ -129,93 +130,40 @@ router.get('/:postId/media/:filename',async(req, res) => {
     
 })
 
-const imageCompressor = async (req, res,next) => {
-    
-    let compressedFiles =[];
-    let errors;
-    
-    if (!req.files){
-        next()
-    };    
-       
-    await Promise.all(    
-        req.files.map(async file => {    
-            let newFile = {...file};     
-            const filenameLarge = file.filename.replace(/(\.[\w\d_-]+)$/i, '_large$1')
-            
-            await sharp(file.buffer)
-                .resize(1500)
-                .toFormat("jpeg")
-                .jpeg({ quality: 90 })
-                .toBuffer({resolveWithObject:true})
-                .then((output)=>{
-                    newFile.filename = filenameLarge
-                    newFile.buffer = output.data
-                    newFile.size = output.info.size
-                    compressedFiles.push(newFile)
-                }).catch((err)=>{
-                    errors = err
-                })
-        })
-    );
-
-    await Promise.all(    
-        req.files.map(async file => {    
-            let newFile = {...file};     
-            const filenameMedium = file.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')
-            
-            await sharp(file.buffer)
-                .resize(600)
-                .toFormat("jpeg")
-                .jpeg({ quality: 80 })
-                .toBuffer({resolveWithObject:true})
-                .then((output)=>{
-                    newFile.filename = filenameMedium
-                    newFile.buffer = output.data
-                    newFile.size = output.info.size
-                    compressedFiles.push(newFile)
-                }).catch((err)=>{
-                    errors = err
-                })
-        })
-    );    
-
-    await Promise.all(    
-        req.files.map(async file => {    
-            let newFile = {...file};
-            const filenameSmall = file.filename.replace(/(\.[\w\d_-]+)$/i, '_small$1') 
-            
-            await sharp(file.buffer)
-                .resize(400)
-                .toFormat("jpeg")
-                .jpeg({ quality: 70 })
-                .toBuffer({resolveWithObject:true})
-                .then((output)=>{
-                    newFile.filename = filenameSmall
-                    newFile.buffer = output.data
-                    newFile.size = output.info.size
-                    compressedFiles.push(newFile)
-                }).catch((err)=>{
-                    errors = err
-                })     
-        })
-    );
-
-    req.files = req.files.concat(compressedFiles)
-
-    next(errors, req.files)
-};
-
-
 router.post('/',async(req,res) => {
     const posts = await loadPostCollection();
+    const users = await conn.collection('users');
     const _id = new mongodb.ObjectID();
+
+    //if a form data isn't passed send the post immediately
+    if(req.body.text){
+
+        const insertion = await posts.insertOne({
+            _id: _id,
+            text: req.body.text,
+            media: req.files ? req.files.map(file => {
+                return file.filename
+            }): [],
+            createdAt: new Date(),
+            user: req.body.user
+        });        
+
+        data = await posts.findOne({_id: _id});
+
+        return res.status(200).json({
+            success: true,
+            msg: 'Post sent!',
+            post: data
+        })
+    }
+
 
     /* *****
         Upload images to memory. The buffer will be used for the image upload 
         since I don't want to create another folder externally. The webhost won't like it...
     * *****/
     uploadToMemory(req,res, async(err)=> {  
+        
         if(err){
             return res.status(404).json({
                 error: err
@@ -223,8 +171,39 @@ router.post('/',async(req,res) => {
         } 
 
         //Parse the stringified JSON data of the post content
-        const postContent = JSON.parse(req.body.postContent)
+        if(!req.body.postContent){
+            return res.status(400).json({
+                msg: 'Post body is empty',
+            })
+        }
 
+        let postContent;
+
+        try{
+            postContent = JSON.parse(req.body.postContent)
+        }
+        catch(err){
+            return res.status(400).json({
+                msg: 'Something went wrong while parsing the post body'
+            })
+        }
+        
+        try{
+            const user = await users.findOne({ _id : new mongodb.ObjectID(postContent.user._id)})
+            if(!user){
+                return res.status(400).json({
+                    success:false,
+                    msg: 'Invalid user'
+                })
+            }
+        }
+        catch(err){
+            return res.status(400).json({
+                success:false,
+                msg: 'Invalid user'
+            })
+        }
+        
         if(!postContent.text.length && !req.files.length){
             return res.status(400).json({
                 success:false,
@@ -232,16 +211,18 @@ router.post('/',async(req,res) => {
             })
         }       
         
-        req.files.forEach(file => {
-            file.filename = crypto.randomBytes(16).toString('hex') + path.extname(file.originalname)            
-        });    
+        if(req.files){
+            req.files.forEach(file => {
+                file.filename = crypto.randomBytes(16).toString('hex') + path.extname(file.originalname)            
+            });    
+        }        
         
         const insertion = await posts.insertOne({
             _id: _id,
             text: postContent.text,
-            media: req.files.map(file => {
+            media: req.files ? req.files.map(file => {
                 return file.filename
-            }),
+            }): null,
             createdAt: new Date(),
             user: postContent.user
         });        
@@ -250,9 +231,12 @@ router.post('/',async(req,res) => {
 
         //compress images then upload to database
         if(req.files.length){
-            imageCompressor(req, res, (err,files)=>{
+            imageCompressor.compressMultiple(req, res, (err,files)=>{
                 if(err){
-                    console.log(err)
+                    return res.status(404).json({
+                        msg: 'An error has occurred while uploading a picture',
+                        error: err
+                    })
                 }   
                 var uploaded = 0;
                 

@@ -58,7 +58,6 @@ const actions = {
          commit('post_send_failed',err,res);
       })
 
-
       if(res.data.success){
          commit('post_send_success',res.data.post);
       }
@@ -124,7 +123,7 @@ const mutations = {
       state.loadingStates.sendingPost = true
    },
    
-   post_send_success: (state, post) => {      
+   post_send_success: (state, post) => {  
       post.createdAt = new Date(post.createdAt);
       state.posts.push(post);
       state.loadingStates.sendingPost = false;

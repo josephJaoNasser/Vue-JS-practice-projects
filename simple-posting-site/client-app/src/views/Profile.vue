@@ -17,9 +17,16 @@
          
       </div>
       <p style="opacity: 0.7">{{this.user.bio}}</p>
+
       <hr>
+      <PostComponent v-if="this.$route.params.username === this.$store.getters.currentUser.username"/>
+      <hr v-if="this.$route.params.username === this.$store.getters.currentUser.username">
+
+      <h4 class="posts-header font-weight-bold text-left">
+         <span v-if="this.$route.params.username === this.$store.getters.currentUser.username">Your posts</span> 
+         <span v-else>Posts by {{this.user.displayName}}</span>
+      </h4>
       
-      <h4 class="posts-header font-weight-bold text-left">Your posts</h4>
       <transition name="fade">                  
          <PostUpdateComponent 
          v-on:update-modal-closed="updatePost = []" 
@@ -54,6 +61,13 @@ const PostList = () => ({
   timeout: 300000
 });
 
+const PostComponent = () => ({
+  component: import(/* webpackChunkName: "post-component" */'@/components/PostComponents/PostComponent.vue'),
+  loading: LoadingComponent,
+  error: ErrorComponent,
+  timeout: 300000
+});
+
 export default {
    data() {
       return {
@@ -64,6 +78,7 @@ export default {
    },
    components: {
       PostList,
+      PostComponent,
       ConfirmDeleteModal: ()=> import(/* webpackChunkName: "confirm-delete-modal-component" */'@/components/PostComponents/ConfirmDeleteModal.vue'),
       PostUpdateComponent: ()=> import(/* webpackChunkName: "post-update-component" */'@/components/PostComponents/PostUpdateComponent.vue'),
    },

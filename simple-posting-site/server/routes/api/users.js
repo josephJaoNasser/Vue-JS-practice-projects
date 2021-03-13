@@ -2,21 +2,26 @@ const { text, json } = require('body-parser');
 const express = require('express');
 const multer = require('multer');
 const Grid = require('gridfs-stream');
-const sharp = require('sharp')
 const crypto = require('crypto')
 const mongoose = require('mongoose');
+const imageCompressor = require('./image-compressor')
 const mongodb = require('mongodb');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const router = express.Router();
-const fs = require('fs');
 const streamifier = require('streamifier');
 
 //DB CONNECTION
-//Create mongo connection using mongoose
+//  Local connection 
+//const connectionString ='mongodb://localhost:27017/PostApp?readPreference=primary&appname=MongoDB%20Compass&ssl=false'
+
+//  Atlas connecton 
 const connectionString = 'mongodb+srv://jjnasser:yHyXGbJXLhR0PN0G@postapp.yjzbg.mongodb.net/PostApp?retryWrites=true&w=majority'
+
+
 const conn = mongoose.createConnection(connectionString)
+
 
 //Initialize gridfs
 let gridfs;
@@ -40,92 +45,6 @@ async function loadUsersCollection(){
 
 
 module.exports = router;
-
-//Image compressor
-const imageCompressor = async (req, res,next) => {
-    
-    let compressedFiles =[];
-    let errors;
-    
-    if (!req.file){
-        return res.status(400).json({
-            msg: 'Please upload a profile image',
-            field: 'profileImage'
-        })
-    };    
-       
-    let newFile = {...req.file};     
-    const filenameLarge = req.file.filename.replace(/(\.[\w\d_-]+)$/i, '_large$1')        
-    await sharp(req.file.buffer)
-        .resize(600)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toBuffer({resolveWithObject:true})
-        .then((output)=>{
-            newFile.filename = filenameLarge
-            newFile.buffer = output.data
-            newFile.size = output.info.size
-            compressedFiles.push(newFile)
-        }).catch((err)=>{
-            errors = err
-        })
-  
-    newFile = {...req.file};      
-    const filenameMedium = req.file.filename.replace(/(\.[\w\d_-]+)$/i, '_medium$1')
-    
-    await sharp(req.file.buffer)
-        .resize(320)
-        .toFormat("jpeg")
-        .jpeg({ quality: 80 })
-        .toBuffer({resolveWithObject:true})
-        .then((output)=>{
-            newFile.filename = filenameMedium
-            newFile.buffer = output.data
-            newFile.size = output.info.size
-            compressedFiles.push(newFile)
-        }).catch((err)=>{
-            errors = err
-        })
-        
-    newFile = {...req.file};   
-    const filenameSmall = req.file.filename.replace(/(\.[\w\d_-]+)$/i, '_small$1') 
-    
-    await sharp(req.file.buffer)
-        .resize(150)
-        .toFormat("jpeg")
-        .jpeg({ quality: 70 })
-        .toBuffer({resolveWithObject:true})
-        .then((output)=>{
-            newFile.filename = filenameSmall
-            newFile.buffer = output.data
-            newFile.size = output.info.size
-            compressedFiles.push(newFile)
-        }).catch((err)=>{
-            errors = err
-        })
-   
-    newFile = {...req.file};  
-    const filenameTiny = req.file.filename.replace(/(\.[\w\d_-]+)$/i, '_tiny$1') 
-    
-    await sharp(req.file.buffer)
-        .resize(150)
-        .toFormat("jpeg")
-        .jpeg({ quality: 70 })
-        .toBuffer({resolveWithObject:true})
-        .then((output)=>{
-            newFile.filename = filenameTiny
-            newFile.buffer = output.data
-            newFile.size = output.info.size
-            compressedFiles.push(newFile)
-        }).catch((err)=>{
-            errors = err
-        })   
-
-    compressedFiles = compressedFiles.concat(req.file)
-
-    next(errors, compressedFiles)
-};
-
 
 //REGISTER/CREATE USERS
 router.post('/register',async (req,res) =>{ 
@@ -242,9 +161,12 @@ router.post('/register',async (req,res) =>{
         });
 
         //compress images then upload to database
-        imageCompressor(req, res, (err,files)=>{
+        imageCompressor.compressSingle(req, res, (err,files)=>{
             if(err){
-                console.log(err)
+                return res.status(404).json({
+                    msg: 'An error has occurred while uploading a picture',
+                    error: err
+                })
             }   
             var uploaded = 0;
             
